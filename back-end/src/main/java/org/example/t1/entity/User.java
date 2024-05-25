@@ -37,6 +37,7 @@ public class User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     //用户名
+    @Column(unique = true)
     private String username;
     //用户密码
     private String password;
