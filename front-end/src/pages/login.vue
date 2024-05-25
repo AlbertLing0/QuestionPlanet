@@ -1,5 +1,6 @@
 <script>
 import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import PlanetBG from '~/components/planetBG.vue';
 import NavBar from "~/components/navigation-bar.vue";
 import axios from 'axios';
@@ -10,6 +11,7 @@ export default defineComponent({
   },
 
   setup() {
+    const router = useRouter();
     const tableData = ref([]);
     const username = ref('');
     const password = ref('');
@@ -23,11 +25,15 @@ export default defineComponent({
             password: password.value
           }
         }).then(response => {
-          console.log(response.data);
+          if (response.data === 'success'){
+            console.log(response.data);
+            router.push('/');
+            }
         });
       } catch (error) {
         console.error('Login failed:', error);
       }
+    
     };
     
     // fetchUserData();

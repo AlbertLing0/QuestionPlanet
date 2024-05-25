@@ -1,5 +1,6 @@
 <script>
 import {defineComponent} from "vue";
+import { useRouter } from 'vue-router';
 import PlanetBG from "~/components/planetBG.vue";
 import NavBar from "~/components/navigation-bar.vue";
 import axios from 'axios';
@@ -37,6 +38,7 @@ export default defineComponent({
     },
     async register() {
       const params = new URLSearchParams();
+      const router = useRouter();
       params.append('email', this.Email);
       params.append('username', this.UserName);
       params.append('password', this.Password);
@@ -46,9 +48,11 @@ export default defineComponent({
 
         // 处理成功响应，例如：
         if (response.data === 'success') {
+          alert('注册成功');
           console.log('注册成功');
-
+          router.push('/');
         } else {
+          alert('注册失败');
           console.error('注册失败', response);
 
         }
