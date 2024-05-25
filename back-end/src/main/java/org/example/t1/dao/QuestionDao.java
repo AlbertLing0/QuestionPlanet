@@ -12,6 +12,6 @@ import java.util.List;
  * @date 2024/5/24 21:08
  */
 public interface QuestionDao extends JpaRepository<Question, Integer> {
-    List<Question> findAllByPaperId(Integer paperId);
+    List<Question> findAllByQuePaperId(Integer quePaperId);
 
 }

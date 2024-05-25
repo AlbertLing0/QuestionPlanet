@@ -19,7 +19,7 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;//问题ID
-    private String paperId;//问卷卷ID，外键
+    private String quePaperId;//所属问卷卷ID，外键
     private Date createTime;// 问题创建时间
     private Integer questionType;//问题类型：1：单选题2：多选题3：简答题4：打分题
     private String questionTitle;//问题标题

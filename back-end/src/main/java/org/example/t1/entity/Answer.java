@@ -16,8 +16,8 @@ public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;//答案ID
-    private Integer ansPaperId;// 答卷ID，外键
-    private Integer questionId;//问题ID，外键
+    private Integer ansPaperId;//所属答卷ID，外键
+    private Integer questionId;//所属问题ID，外键
     private Integer questionType;//问题类型：1：单选题2：多选题3：简答题 4：打分题
     private Date createTime;//答题时间
     private String answerTitle;//问题标题

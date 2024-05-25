@@ -14,4 +14,6 @@ import java.util.List;
  */
 public interface AnswerDao extends JpaRepository<Answer, Integer> {
     List<Answer> findAllByQuestionId(Integer questionId);
+
+    List<Answer> findAllByAnsPaperId(Integer ansPaperId);
 }

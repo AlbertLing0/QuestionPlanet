@@ -20,6 +20,7 @@ public class AnsPaper {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;//答卷ID
+    private Integer quePaperId;//所属问卷id
     private Integer userId;//回答用户ID，外键
     private String title;//答卷标题
     private Date createTime;//答卷创建时间
