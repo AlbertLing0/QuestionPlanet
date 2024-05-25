@@ -7,7 +7,7 @@ import axios from 'axios';
 
 export default defineComponent({
   components: {
-    PlanetBG,NavBar,axios
+    NavBar,axios
   },
 
   setup() {
@@ -52,9 +52,6 @@ export default defineComponent({
 <template>
   <div id="naviBar">
     <nav-bar/>
-  </div>
-  <div id="BG">
-    <planet-b-g/>
   </div>
   <div  class="loginBox">
     <div class="title">

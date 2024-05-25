@@ -6,7 +6,7 @@ import NavBar from "~/components/navigation-bar.vue";
 import axios from 'axios';
 
 export default defineComponent({
-  components: {PlanetBG,NavBar,axios},
+  components: {NavBar,axios},
   data() {
     return {
       Email: '',
@@ -68,9 +68,6 @@ export default defineComponent({
 <template>
   <div id="naviBar">
     <nav-bar/>
-  </div>
-  <div id="BG">
-    <planet-b-g/>
   </div>
   <div class="registerBox">
     <div class="title">
