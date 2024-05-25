@@ -1,4 +1,17 @@
+<script>
+import {defineComponent} from "vue";
+import PlanetBG from "~/components/planetBG.vue";
+import NavBar from "~/components/navigation-bar.vue";
+
+export default defineComponent({
+  components: {PlanetBG,NavBar}
+})
+</script>
+
 <template>
+  <div id="naviBar">
+    <nav-bar/>
+  </div>
   <div id="BG">
     <planet-b-g/>
   </div>
@@ -8,7 +21,7 @@
         Register
       </div>
       <div class="tips">
-        Join 问卷星球 and start your journey!
+        Join QuestionPlanet and start your journey!
       </div>
     </div>
     <div class="form">
@@ -37,21 +50,17 @@
 </template>
 
 
-<script>
-import {defineComponent} from "vue";
-import PlanetBG from "~/components/planetBG.vue";
-
-export default defineComponent({
-  components: {PlanetBG}
-})
-</script>
-
 <style scoped>
 #BG {
   position: relative;
   width: 100%;
   height: 100vh;
   overflow: hidden;
+}
+#naviBar {
+  position: absolute;
+  width: 100%;
+  z-index: 20;
 }
 @font-face {
   font-family: PlastoTrial_ExtraLight;
