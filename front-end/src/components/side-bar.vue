@@ -1,8 +1,7 @@
 <template>
   <div class="menu-wrapper">
     <div class="menu-title">
-      <span class="iconfont icon-24gf-bag"></span>
-      <span class="title-text">Maos'menu</span>
+      <img src="../assets/img/logo/logo-black.svg" alt="" class="logo">
     </div>
     <div class="content">
       <div class="person-info">
