@@ -1,5 +1,5 @@
 <template>
-  <div :class="['menu-wrapper', 'component-root', themeDark && 'theme-color-dark']">
+  <div class="menu-wrapper">
 <!--    <div class="menu-title">-->
 <!--      <img :src="logoSrc" alt="" class="logo">-->
 <!--    </div>-->
@@ -39,35 +39,26 @@ export default {
   data() {
     return {
       menuData: [
-        { id: 1, menuName: "主页", iconFont: "icon-caidan" },
+        { id: 1, menuName: "Profile", iconFont: "icon-caidan" },
         // { id: 2, menuName: "Products", iconFont: "icon-gouwu" },
         // { id: 3, menuName: "Categories", iconFont: "icon-category" },
-        { id: 2, menuName: "我的问卷", iconFont: "icon-order-fill" },
-        // { id: 5, menuName: "我的", iconFont: "icon-denglu-yonghuzu" },
+        { id: 2, menuName: "My Questionnaires", iconFont: "icon-order-fill" },
+        // { id: 5, menuName: "Mine", iconFont: "icon-denglu-yonghuzu" },
         // { id: 6, menuName: "Sales Offers", iconFont: "icon-liwu" },
-        { id: 7, menuName: "数据分析", iconFont: "icon-bingtu" },
+        { id: 7, menuName: "Data Analisys", iconFont: "icon-bingtu" },
         // { id: 8, menuName: "Locations", iconFont: "icon-weizhi" },
-        { id: 9, menuName: "设置", iconFont: "icon-shezhi" },
+        { id: 9, menuName: "Setting", iconFont: "icon-shezhi" },
         { id: 10, menuName: "Logout", iconFont: "icon-jinru" }
-      ],
-      themeDark: false
+      ]
     };
   },
   mounted() {
-    localStorage.setItem('theme-color',"light");
-    const savedTheme = localStorage.getItem('theme-color');
-    if (savedTheme) {
-      this.themeDark = savedTheme === 'dark';
-      this.$emit('update-theme', this.themeDark);
-    }
+
   },
   methods: {
     changeDark() {
-      this.themeDark = !this.themeDark;
-      localStorage.setItem('theme-color', this.themeDark ? "dark" : "light");
-      this.$emit('update-theme', this.themeDark);
-    },
-
+      this.$emit("toggle-theme");
+    }
   }
 };
 </script>
@@ -81,34 +72,11 @@ export default {
   text-rendering: optimizeLegibility;
 }
 
-
-div.component-root {
-  --theme-text-color: rgb(131, 128, 155);
-  --theme-info-text-color: rgb(0, 0, 0);
-  --theme-hover-color: rgb(103, 56, 223);
-  --theme-hover-menu-color: rgb(248, 247, 255);
-  --bg-color: rgb(240, 240, 240);
-  --theme-item-color:black;
-  //--bg-color:lightgray;
-}
-
-
-
-div.component-root.theme-color-dark {
-  --theme-text-color: rgb(141, 139, 164);
-  --theme-info-text-color: rgb(255, 255, 255);
-  --theme-hover-color: rgb(255, 255, 255);
-  --theme-hover-menu-color: rgb(36, 31, 53);
-  --bg-color: rgb(31, 30, 38);
-  --theme-item-color: lightgray;
-}
-
-
 .menu-wrapper {
   margin-left: 25px;
   width: 70px;
   border-radius: 20px;
-  background-color: var(--bg-color);
+  background-color: var(--pane-color);
   padding: 10px;
   box-sizing: border-box;
   transition: 0.6s;
@@ -135,7 +103,7 @@ div.component-root.theme-color-dark {
   .icon-24gf-bag {
     font-size: 30px;
     padding-left: 10px;
-    color: rgb(103, 56, 223);
+    color: var(--theme-hover-color);
   }
 }
 
@@ -192,7 +160,7 @@ div.component-root.theme-color-dark {
   .block {
     width: 6px;
     height: 25px;
-    background: rgb(101, 57, 225);
+    background-color: var(--theme-hover-color);
     position: absolute;
     right: -10px;
     top: 13px;
@@ -240,7 +208,7 @@ div.component-root.theme-color-dark {
       width: 40px;
       height: 20px;
       border-radius: 20px;
-      background: rgb(101, 58, 223);
+      background-color: var(--theme-hover-color);
       cursor: pointer;
       position: relative;
       overflow: hidden;
