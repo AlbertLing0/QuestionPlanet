@@ -25,11 +25,14 @@ const routes = [{
     meta: { requiresParallax: true }
 },{
     path: "/about",
-    component:About
+    component:About,
+    meta: { requiresParallax: false }
 },{
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: NotFound
+    component: NotFound,
+    meta: { requiresParallax: false }
+
 },{
     path: "/design/:id",
     component: design
