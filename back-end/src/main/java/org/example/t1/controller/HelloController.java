@@ -1,11 +1,9 @@
 package org.example.t1.controller;
 
+import org.example.t1.StaticValues;
 import org.example.t1.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author 张喆宇
@@ -18,5 +16,8 @@ public class HelloController {
     public String hello() {return "你好 世界";}
 
     @GetMapping("/lol")
-    public String lol() {return "测试本地服务器能不能用";}
+    public String lol() {
+        System.out.println(StaticValues.onlineUser.getUsername());
+        return "测试本地服务器能不能用";
+    }
 }

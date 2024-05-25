@@ -6,7 +6,6 @@ import org.example.t1.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -75,6 +74,7 @@ public class LoginService {
             return "unregistered";
         }
         if (user.getPassword().equals(password)) {
+            StaticValues.onlineUser=user;
             return "success";
         } else {
             return "wrongPassword";

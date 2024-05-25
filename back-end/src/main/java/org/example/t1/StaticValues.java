@@ -11,5 +11,5 @@ import org.example.t1.entity.User;
 public class StaticValues {
     public static User onlineUser = null;
 
-    public static Integer emailCode = 0;
+    public static Integer emailCode;
 }
