@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-wrapper">
+  <div :class="['menu-wrapper', 'component-root', themeDark && 'theme-color-dark']">
     <div class="menu-title">
       <img src="../assets/img/logo/logo-black.svg" alt="" class="logo">
     </div>
@@ -56,17 +56,12 @@ export default {
     const savedTheme = localStorage.getItem('theme-color');
     if (savedTheme) {
       this.themeDark = savedTheme === 'dark';
-      document.body.setAttribute('theme-color', savedTheme);
-    } else {
-      document.body.setAttribute('theme-color', 'light');
     }
   },
   methods: {
     changeDark() {
       this.themeDark = !this.themeDark;
-      const theme = this.themeDark ? 'dark' : 'light';
-      document.body.setAttribute('theme-color', theme);
-      localStorage.setItem('theme-color', theme);
+      localStorage.setItem('theme-color', this.themeDark ? "dark" : "light");
     }
   }
 };
@@ -74,7 +69,8 @@ export default {
 
 <style scoped>
 @import url(../assets/iconfont/iconfont.css);
-:root[theme-color="dark"] {
+
+div.component-root {
   --theme-text-color: rgb(131, 128, 155);
   --theme-info-text-color: rgb(0, 0, 0);
   --theme-hover-color: rgb(103, 56, 223);
@@ -82,7 +78,7 @@ export default {
   --bg-color: rgb(255, 255, 255);
 }
 
-:root[theme-color="light"] {
+div.component-root.theme-color-dark {
   --theme-text-color: rgb(141, 139, 164);
   --theme-info-text-color: rgb(255, 255, 255);
   --theme-hover-color: rgb(255, 255, 255);
