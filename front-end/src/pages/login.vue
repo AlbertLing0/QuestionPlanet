@@ -1,11 +1,12 @@
 <script>
 import { defineComponent, ref } from 'vue';
 import PlanetBG from '~/components/planetBG.vue';
+import NavBar from "~/components/navigation-bar.vue";
 import request from '../utils/request';
 
 export default defineComponent({
   components: {
-    PlanetBG
+    PlanetBG,NavBar
   },
 
   setup() {
@@ -42,6 +43,9 @@ export default defineComponent({
 </script>
 
 <template>
+  <div id="naviBar">
+    <nav-bar/>
+  </div>
   <div id="BG">
     <planet-b-g/>
   </div>
@@ -79,6 +83,11 @@ export default defineComponent({
   width: 100%;
   height: 100vh;
   overflow: hidden;
+}
+#naviBar {
+  position: absolute;
+  width: 100%;
+  z-index: 10;
 }
 @font-face {
   font-family: PlastoTrial_ExtraLight;

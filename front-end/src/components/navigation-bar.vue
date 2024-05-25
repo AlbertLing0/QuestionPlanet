@@ -13,13 +13,17 @@ const props = defineProps({
   ctaLink: {
     type: String,
     default: '#/login'
+  },
+  indexLink:{
+    type:String,
+    default: '#/'
   }
 });
 </script>
 
 <template>
   <header>
-    <img src="../assets/img/logo/logo1.svg" alt="" class="logo">
+    <a :href="indexLink"><img src="../assets/img/logo/logo-white.svg" alt="" class="logo"></a>
     <nav>
       <ul class="nav_links">
         <li v-for="link in navLinks" :key="link">{{ link }}</li>
@@ -37,7 +41,6 @@ const props = defineProps({
   margin: 0;
   padding: 0;
   background-color: transparent;
-  backdrop-filter: blur(7px);
 }
 
 li, a, button {
