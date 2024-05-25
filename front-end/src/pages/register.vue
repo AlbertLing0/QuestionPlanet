@@ -4,16 +4,14 @@ import PlanetBG from "~/components/planetBG.vue";
 import NavBar from "~/components/navigation-bar.vue";
 
 export default defineComponent({
-  components: {PlanetBG,NavBar}
+  components: {NavBar},
+  name:"register"
 })
 </script>
 
 <template>
   <div id="naviBar">
     <nav-bar/>
-  </div>
-  <div id="BG">
-    <planet-b-g/>
   </div>
   <div class="registerBox">
     <div class="title">
@@ -51,12 +49,6 @@ export default defineComponent({
 
 
 <style scoped>
-#BG {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
 #naviBar {
   position: absolute;
   width: 100%;

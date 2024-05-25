@@ -1,20 +1,19 @@
 <script>
 import {defineComponent, ref} from 'vue';
-import PlanetBG from '~/components/planetBG.vue';
+
 import NavBar from "~/components/navigation-bar.vue";
 
-export default defineComponent({
-  components: {PlanetBG, NavBar}
-});
+export default {
+  components: { NavBar},
+  name: 'Index',
+};
+
 </script>
 
 <template>
   <div id="app">
-    <div id="BG">
-      <planet-b-g/>
-    </div>
     <div id="naviBar">
-      <nav-bar/>
+      <NavBar/>
     </div>
   </div>
 </template>
@@ -27,12 +26,7 @@ export default defineComponent({
   overflow: hidden;
 }
 
-#BG {
-  position: absolute;
-  width: 100%;
-  height: 100vh;
-  z-index: 1;
-}
+
 
 #naviBar {
   position: absolute;

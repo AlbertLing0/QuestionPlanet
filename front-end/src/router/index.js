@@ -13,13 +13,16 @@ import design from '~/pages/Design.vue'
 
 const routes = [{
     path:"/",
-    component: IndexPage
+    component: IndexPage,
+    meta: { requiresParallax: true }
 },{
     path: "/login",
-    component:LoginPage
+    component:LoginPage,
+    meta: { requiresParallax: true }
 },{
     path: "/register",
-    component:RegisterPage
+    component:RegisterPage,
+    meta: { requiresParallax: true }
 },{
     path: "/about",
     component:About

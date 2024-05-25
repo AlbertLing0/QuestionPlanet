@@ -6,8 +6,9 @@ import request from '../utils/request';
 
 export default defineComponent({
   components: {
-    PlanetBG,NavBar
+    NavBar
   },
+  name: 'Login',
 
   setup() {
     const tableData = ref([]);
@@ -46,9 +47,6 @@ export default defineComponent({
   <div id="naviBar">
     <nav-bar/>
   </div>
-  <div id="BG">
-    <planet-b-g/>
-  </div>
   <div  class="loginBox">
     <div class="title">
       <div class="title-h1">
@@ -78,12 +76,6 @@ export default defineComponent({
 </template>
 
 <style scoped>
-#BG{
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
 #naviBar {
   position: absolute;
   width: 100%;
