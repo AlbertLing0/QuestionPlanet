@@ -1,10 +1,13 @@
 package org.example.t1.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.example.t1.service.CreateService;
 import org.example.t1.service.FillInService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.data.repository.query.Param;
 /**
  * @author 郑悦
  * @Description:
@@ -20,5 +23,11 @@ public class FillInController {
         this.createService = createService;
         this.fillInService = fillInService;
         this.gson = gson;
+    }
+
+    @PostMapping("/api/fillin/submitAnswer")
+    public String submitAnswer(@Param("quePaperId") Integer quePaperId, @RequestBody String answer, @Param("userId") Integer userId) {
+        String answerListJson = gson.fromJson(answer, JsonObject.class).get("answerList").toString();
+        return fillInService.submitAnswer(quePaperId, answerListJson, userId);
     }
 }

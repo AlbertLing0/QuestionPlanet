@@ -76,10 +76,4 @@ public class FillInServiceImpl implements FillInService {
         }
         return "success";
     }
-
-    @Override
-    public Boolean checkAlreadySubmit(Integer quePaperId, Integer userId) {
-
-        return null;
-    }
 }
