@@ -8,8 +8,8 @@
         return to the previous page.
       </p>
       <div class="buttons">
-        <button class="go-home btn">GO HOME</button>
-        <button class="back btn">BACK</button>
+        <a :href="'#/'"> <button class="go-home btn">GO HOME</button></a>
+        <button @click="goBack" class="back btn">BACK</button>
       </div>
     </div>
     <div class="astronaut">
@@ -17,6 +17,14 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const goBack = () => {
+  router.go(-1); // 返回上一个页面
+};
+</script>
 
 <style scoped>
 @font-face {
@@ -66,6 +74,7 @@
   height: 50px;
   border-radius: 30px;
   margin-top: 10px;
+  margin-right: 20px;
   cursor: pointer;
   transition: 0.3s;
   background-color: #fff;
@@ -147,5 +156,3 @@
   }
 }
 </style>
-<script setup>
-</script>

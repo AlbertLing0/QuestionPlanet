@@ -72,7 +72,7 @@ onMounted(() => {
 }
 
 .text h1 {
-  font-family: "AlphaCentauri" !important;
+  font-family: "AlphaCentauri" ;
   font-size: 5vw;
   color: #fff;
   letter-spacing: 20px;
