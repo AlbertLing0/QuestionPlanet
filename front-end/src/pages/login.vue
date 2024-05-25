@@ -2,13 +2,12 @@
 import { defineComponent, ref } from 'vue';
 import PlanetBG from '~/components/planetBG.vue';
 import NavBar from "~/components/navigation-bar.vue";
-import request from '../utils/request';
+import axios from 'axios';
 
 export default defineComponent({
   components: {
-    NavBar
+    PlanetBG,NavBar,axios
   },
-  name: 'Login',
 
   setup() {
     const tableData = ref([]);
@@ -17,14 +16,15 @@ export default defineComponent({
 
     // 登录提交方法
     const submitLogin = async () => {
-      console.log('This message is logged to the browser console:');
       try {
-        const response = await request.post('/login', {
-          username: username.value,
-          password: password.value
+        axios.get('http://localhost:1234/api/login', {
+          params: {
+            username: username.value,
+            password: password.value
+          }
+        }).then(response => {
+          console.log(response.data);
         });
-        // 假设登录成功后
-        console.log('This message is logged to the browser console:',response.data);
       } catch (error) {
         console.error('Login failed:', error);
       }
@@ -46,6 +46,9 @@ export default defineComponent({
 <template>
   <div id="naviBar">
     <nav-bar/>
+  </div>
+  <div id="BG">
+    <planet-b-g/>
   </div>
   <div  class="loginBox">
     <div class="title">
@@ -76,6 +79,12 @@ export default defineComponent({
 </template>
 
 <style scoped>
+#BG{
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
 #naviBar {
   position: absolute;
   width: 100%;
