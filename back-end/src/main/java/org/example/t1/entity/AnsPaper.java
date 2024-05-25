@@ -3,6 +3,10 @@ package org.example.t1.entity;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
 
 /**
@@ -10,15 +14,13 @@ import java.util.Date;
  * @Description:
  * @date 2024/5/24 16:21
  */
-@Getter
-@Setter
-@ToString
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@Entity(name = "anspaper")
 public class AnsPaper {
-    private String id;//答卷卷ID
-    private String userId;//用户ID，外键
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;//答卷ID
+    private Integer userId;//回答用户ID，外键
     private String title;//答卷标题
     private Date createTime;//答卷创建时间
 }

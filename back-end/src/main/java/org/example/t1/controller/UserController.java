@@ -2,12 +2,9 @@ package org.example.t1.controller;
 
 import org.example.t1.StaticValues;
 import org.example.t1.entity.User;
-import org.example.t1.mapper.UserMapper;
+import org.example.t1.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,32 +14,29 @@ import java.util.List;
  * @date 2024/5/18 20:51
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
-    @Autowired
-    private UserMapper userMapper;
+    final
+    LoginService loginService;
 
-    @GetMapping("/users")
+    public UserController(LoginService loginService) {
+        this.loginService = loginService;
+    }
+
+    @GetMapping("api/users")
     public List query(){
-        List<User> list = userMapper.findAll();
-        return list;
+        return loginService.allUsers();
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.GET)
-    public String register(String username,String password){
-        User user = new User(username, password);
-        userMapper.insert(user);
-        return "注册成功";
+    @RequestMapping(value = "api/register", method = RequestMethod.POST)
+    public String register(String username,String password,String email,Integer code){
+        return loginService.reg(username, password,email,code);
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "api/login", method = RequestMethod.GET)
     public String login(String username,String password){
-        User user = userMapper.findUserByName(username);
-        if(user.getPassword().equals(password)) {
-            StaticValues.onlineUser=user;
-            return "登陆成功";
-        }
-        return "登陆失败";
+        return loginService.login(username,password);
     }
 
 }

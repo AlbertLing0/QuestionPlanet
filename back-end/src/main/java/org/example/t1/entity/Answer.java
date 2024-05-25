@@ -3,23 +3,21 @@ package org.example.t1.entity;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import javax.persistence.*;
 import java.util.Date;
 /**
  * @author 张喆宇
  * @Description:
  * @date 2024/5/21 20:39
  */
-@Getter
-@Setter
-@ToString
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@Entity(name = "answer")
 public class Answer {
-
-    private String id;//答案ID
-    private String ansPaperId;// 答卷ID，外键
-    private String questionId;//问题ID，外键
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;//答案ID
+    private Integer ansPaperId;// 答卷ID，外键
+    private Integer questionId;//问题ID，外键
     private Integer questionType;//问题类型：1：单选题2：多选题3：简答题 4：打分题
     private Date createTime;//答题时间
     private String answerTitle;//问题标题

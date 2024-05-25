@@ -17,23 +17,25 @@
 package org.example.t1.entity;
 
 import lombok.*;
-import lombok.experimental.Accessors;
+
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author <a href="mailto:chenxilzx1@gmail.com">theonefx</a>
  */
 
-@Getter
-@Setter
-@ToString
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class User {
-    //用户总id
-    public static int totalId=0;
+@Data
+@Entity(name = "user")
+public class User{
     //用户id
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     //用户名
     private String username;
     //用户密码
@@ -41,11 +43,4 @@ public class User {
     //用户邮箱
     private String email;
 
-    public User(String username, String password) {
-        this.id=totalId;
-        this.username = username;
-        this.password = password;
-        this.email="1348320402@qq.com";
-        totalId++;
-    }
 }

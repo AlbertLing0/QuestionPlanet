@@ -12,7 +12,7 @@ import org.springframework.web.filter.CorsFilter;
  * @Description:
  * @date 2024/5/21 19:57
  */
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173")
 @Configuration
 public class CorsConfig {
 
@@ -23,7 +23,7 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:8080"); // 1 设置前端的访问源地址
+        corsConfiguration.addAllowedOrigin("http://localhost:5173"); // 1 设置前端的访问源地址
         corsConfiguration.addAllowedHeader("*"); // 2 设置访问源请求头
         corsConfiguration.addAllowedMethod("*"); // 3 设置访问源请求方法
         corsConfiguration.setMaxAge(MAX_AGE);
