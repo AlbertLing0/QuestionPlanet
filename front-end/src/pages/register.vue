@@ -1,11 +1,67 @@
 <script>
 import {defineComponent} from "vue";
+import { useRouter } from 'vue-router';
 import PlanetBG from "~/components/planetBG.vue";
 import NavBar from "~/components/navigation-bar.vue";
+import axios from 'axios';
 
 export default defineComponent({
-  components: {NavBar},
-  name:"register"
+  components: {NavBar,axios},
+  data() {
+    return {
+      Email: '',
+      UserName: '',
+      Password: '',
+      ConfirmPassword: '',
+      EmailVerificationCode: ''
+    };
+  },
+  methods: {
+    async sendVerificationCode() {
+      const params = new URLSearchParams();
+      params.append('email', this.Email);
+      try {
+        const response = await axios.post('http://localhost:1234/api/sendemail', params);
+
+        // 处理成功响应，例如：
+        if (response.data === 0) {
+          console.log('验证码发送成功');
+          // 可以在这里添加成功提示，例如弹出一个提示框
+        } else {
+          console.error('验证码发送失败', response);
+          // 处理其他错误状态码，例如弹出一个错误提示框
+        }
+      } catch (error) {
+        console.error('发送验证码时出现错误', error);
+        // 处理请求错误，例如网络错误，弹出一个错误提示框
+      }
+    },
+    async register() {
+      const params = new URLSearchParams();
+      const router = useRouter();
+      params.append('email', this.Email);
+      params.append('username', this.UserName);
+      params.append('password', this.Password);
+      params.append('code', this.EmailVerificationCode);
+      try {
+        const response = await axios.post('http://localhost:1234/api/register', params);
+
+        // 处理成功响应，例如：
+        if (response.data === 'success') {
+          alert('注册成功');
+          console.log('注册成功');
+          router.push('/');
+        } else {
+          alert('注册失败');
+          console.error('注册失败', response);
+
+        }
+      } catch (error) {
+        console.error('注册时出现错误', error);
+
+      }
+    }
+  }
 })
 </script>
 
@@ -24,22 +80,22 @@ export default defineComponent({
     </div>
     <div class="form">
       <div class="input-wrapper">
-        <input type="text" placeholder="UserName">
+        <input type="text" placeholder="UserName" v-model="UserName">
       </div>
       <div class="input-wrapper">
-        <input type="password" placeholder="Password">
+        <input type="password" placeholder="Password" v-model="Password">
       </div>
       <div class="input-wrapper">
-        <input type="password" placeholder="Confirm Password">
+        <input type="password" placeholder="Confirm Password" v-model="ConfirmPassword">
       </div>
       <div class="input-wrapper">
-        <input type="email" placeholder="Email">
-        <button class="send-code-btn">Send Code</button>
+        <input type="email" placeholder="Email" v-model="Email">
+        <button class="send-code-btn" @click="sendVerificationCode">Send Code</button>
       </div>
       <div class="input-wrapper">
-        <input type="text" placeholder="Email Verification Code">
+        <input type="text" placeholder="Email Verification Code" v-model="EmailVerificationCode">
       </div>
-      <button class="btn">Register</button>
+      <button class="btn" @click ="register">Register</button>
     </div>
     <div class="login">
       Already have an account? <span><router-link to="/login">Login</router-link></span>
@@ -49,6 +105,12 @@ export default defineComponent({
 
 
 <style scoped>
+#BG {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
 #naviBar {
   position: absolute;
   width: 100%;
