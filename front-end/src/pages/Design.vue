@@ -1,7 +1,7 @@
 <template>
 	<div class="design">
 		<div class="qu-wrap">
-			<!-- <header>
+            <header>                
 				<span @click="iterator = backBtn(); iterator.next()">&lt; 返回</span>
 				<p v-show="!titleEditing" @click="titleEditing = true">{{ tempTitle }}</p>
 				<input type="text"
@@ -9,21 +9,9 @@
 				v-model="title"
 				:class="{inlineShow: titleEditing}"
 				@focus="_title = title"
-				@blur="titleEditing = false"
 				@keyup.esc="cancelTitleEdit()"
-				@keyup.enter="titleEditing = false">
-			</header> -->
-            <header>                
-				<span @click="iterator = backBtn(); iterator.next()">&lt; 返回</span>
-				<p v-if="!titleEditing" @click="titleEditing = true">{{ tempTitle }}</p>
-				<input type="text"
-				v-focus
-				v-model="title"
-                v-if="titleEditing"
-				:class="{inlineShow: titleEditing}"
-				@focus="_title = title"
-				@blur="ifTitleBlank();"
-				@keyup.enter="ifTitleBlank();">
+				@blur="ifTitleBlank()"
+				@keyup.enter="ifTitleBlank()">
             </header>
 
 
@@ -80,6 +68,12 @@
 								<li @click="delOption(optIndex, item.options)">删除</li>
 							</ul>
 						</li>
+						<label id="require-check" v-if="item.type === 'radio'">
+							此题为单选题
+						</label>
+						<label id="require-check" v-else>
+							此题为多选题
+						</label>
 					</ul>
 					<ul class="operat-list">
 						<li v-if="index !== 0"
@@ -135,13 +129,12 @@
 			</footer>
 		</div>
 	</div>
-    
 </div>
 </template>
 
 <script>
-// import Data from '../data.js';
-// import Store from '../store.js';
+import Data from '../components/designData/data.js';
+import Store from '../components/designData/store.js';
 import Datepicker from '../components/Datepicker.vue';
 // import { defineComponent, ref } from 'vue';
 import PlanetBG from '~/components/planetBG.vue';
@@ -160,26 +153,10 @@ export default {
 			index: '',
 			quData: {},
 			questions: [],
-			questionTemplate:{
-                radio: {
-					"type": "radio",
-					"topic": "单选题",
-					"options": ["选项1","选项2","选项3","选项4"]
-				},
-			checkbox: {
-					"type": "checkbox",
-					"topic": "多选题",
-					"options": ["选项1","选项2","选项3","选项4"]
-				},
-			textarea: {
-					"type": "textarea",
-					"topic": "文本题",
-					"isMandatory": false
-				}
-            },
+			questionTemplate:{},
 			quList: Store.fetch(),
 			date: '',
-			title: '',
+			title: 'default title',
 			_title: '',
 			topic: '',
 			_topic: '',
@@ -223,39 +200,39 @@ export default {
 		}
 	},
 
-	// created() {
-	// 	this.getData();
-	// },
+	created() {
+		this.getData();
+	},
 
 	computed: {
 		tempTitle() {
-			return this.title || this.quData.title;
+			return this.title /*|| this.quData.title*/;
 		}
 	},
 
 	methods: {
 		getData() {
-			let id = this.$route.params.id;
+			// let id = this.$route.params.id;
 
-			if (id === 0) {
-				let item = {};
-				item.id = this.quList.length + 1;
-				item.title = `问卷调查${item.id}`;
-				item.state = 0;
-				item.stateName = '未发布';
-				item.time = '2018-12-31';
-				item.questions = [];
-				this.quData = item;
-			}
-			else {
-				this.quData = this.quList[id - 1];
-			}
+			// if (id === 0) {
+				// let item = {};
+				// item.id = this.quList.length + 1;
+				// item.title = `问卷调查${item.id}`;
+				// item.state = 0;
+				// item.stateName = '未发布';
+				// item.time = '2018-12-31';
+				// item.questions = [];
+				// this.quData = item;
+			// }
+			// else {
+				//this.quData = this.quList[id - 1];
+			// }
 
-			this.date = this.quData.time;
-			this.title = this.quData.title;
-			this.index = this.quData.id - 1;
+			this.date = '2018-12-31'/*this.quData.time*/;
+			// this.title = this.quData.title;
+			// this.index = this.quData.id - 1;
 			this.questionTemplate = Data.template;
-			this.questions = [...this.quData.questions];
+			// this.questions = [...this.quData.questions];
 		},
 
 		changeDate(date) {
@@ -278,7 +255,7 @@ export default {
             if(this.title === ''){
                 this.title = this._title;
             }
-            titleEditing = false;
+            this.titleEditing = false;
         },
 
 		cancelTopicEdit() {
@@ -293,11 +270,17 @@ export default {
 
 		doneTopicEdit(index) {
 			this.topicEditing = false;
+			if(this.topic === ''){
+				this.topic = this._topic;
+			}
 			this.questions[index].topic = this.topic;
 		},
 
 		doneOptionEdit(index, optIndex) {
 			this.curOptIndex = '';
+			if(this.optionText === ''){
+				this.optionText = this._optionText;
+			}
 			this.questions[index].options[optIndex] = this.optionText;
 		},
 
@@ -323,8 +306,8 @@ export default {
 		},
 
 		reuse(index) {
-			if (this.questions.length === 10) {
-				this.errorPrompt(`每份问卷至多10个问题！`);
+			if (this.questions.length === 20) {
+				this.errorPrompt(`每份问卷至多20个问题！`);
 				return;
 			}
 			let oldQuestion = this.questions[index];
@@ -349,8 +332,8 @@ export default {
 		},
 
 		addOption(options) {
-			if (options.length === 4) {
-				this.errorPrompt(`每个问题至多四个选项`);
+			if (options.length === 10) {
+				this.errorPrompt(`每个问题至多10个选项`);
 				return;
 			}
 			options.push(`请编辑选项内容`)
@@ -362,11 +345,31 @@ export default {
 		},
 
 		addType(type) {
-			if (this.questions.length === 10) {
-				this.errorPrompt(`每份问卷至多10个问题！`);
+			if (this.questions.length === 20) {
+				this.errorPrompt(`每份问卷至多20个问题！`);
 				return;
 			}
-			this.questions.push(this.questionTemplate[type]);
+			let ques = {};
+			if(type === 'radio'){
+				ques = {
+					"type": "radio",
+					"topic": "单选题",
+					"options": ["选项1","选项2","选项3","选项4"]
+				};
+			}else if(type === 'checkbox'){
+				ques = {
+					"type": "checkbox",
+					"topic": "多选题",
+					"options": ["选项1","选项2","选项3","选项4"]
+				};
+			}else{
+				ques = {
+					"type": "textarea",
+					"topic": "文本题",
+					"isMandatory": false
+				};
+			}
+			this.questions.push(ques);
 		},
 
 		saveData() {

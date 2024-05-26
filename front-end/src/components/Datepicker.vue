@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
 	<div class="date-container">
 		<header>
 			<p class="date-title">
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-	import data from'../data.js';
+	import data from '../components/designData/data.js';
 
 	export default {
 		name: 'Datepicker',
@@ -181,10 +181,10 @@ header {
 	}
 
 }
-</style> -->
+</style>
 
 
-<template>
+<!-- <template>
 	<div class="demo-datetime-picker">
 	  <div class="block">
 		<span class="demonstration">Default</span>
@@ -268,4 +268,4 @@ header {
 	font-size: 14px;
 	margin-bottom: 20px;
   }
-  </style>
+  </style> -->

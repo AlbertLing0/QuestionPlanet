@@ -32,14 +32,14 @@ onMounted(() => {
 @font-face {
   font-family: PlastoTrial_ExtraLight;
   font-weight: 700;
-  src: url(src/assets/font/PlastoTrial-ExtraLight.otf) format("truetype");
+  src: url(~/assets/font/PlastoTrial-ExtraLight.otf) format("truetype");
   text-rendering: optimizeLegibility;
 }
 
 @font-face {
   font-family: PlastoTrial_ExtraBold;
   font-weight: 700;
-  src: url(src/assets/font/PlastoTrial-ExtraBold.otf) format("truetype");
+  src: url(~/assets/font/PlastoTrial-ExtraBold.otf) format("truetype");
   text-rendering: optimizeLegibility;
 }
 

@@ -1,8 +1,8 @@
 <template>
   <div :class="['menu-wrapper', 'component-root', themeDark && 'theme-color-dark']">
-    <div class="menu-title">
-      <img src="../assets/img/logo/logo-black.svg" alt="" class="logo">
-    </div>
+<!--    <div class="menu-title">-->
+<!--      <img :src="logoSrc" alt="" class="logo">-->
+<!--    </div>-->
     <div class="content">
       <div class="person-info">
         <img src="../assets/head_portrait.jpg" alt="" />
@@ -35,49 +35,63 @@
 
 <script>
 export default {
+  name:"side-bar",
   data() {
     return {
       menuData: [
-        { id: 1, menuName: "Dashboard", iconFont: "icon-caidan" },
-        { id: 2, menuName: "Products", iconFont: "icon-gouwu" },
-        { id: 3, menuName: "Categories", iconFont: "icon-category" },
-        { id: 4, menuName: "Orders", iconFont: "icon-order-fill" },
-        { id: 5, menuName: "Customers", iconFont: "icon-denglu-yonghuzu" },
-        { id: 6, menuName: "Sales Offers", iconFont: "icon-liwu" },
-        { id: 7, menuName: "Dealership", iconFont: "icon-bingtu" },
-        { id: 8, menuName: "Locations", iconFont: "icon-weizhi" },
-        { id: 9, menuName: "Settings", iconFont: "icon-shezhi" },
+        { id: 1, menuName: "主页", iconFont: "icon-caidan" },
+        // { id: 2, menuName: "Products", iconFont: "icon-gouwu" },
+        // { id: 3, menuName: "Categories", iconFont: "icon-category" },
+        { id: 2, menuName: "我的问卷", iconFont: "icon-order-fill" },
+        // { id: 5, menuName: "我的", iconFont: "icon-denglu-yonghuzu" },
+        // { id: 6, menuName: "Sales Offers", iconFont: "icon-liwu" },
+        { id: 7, menuName: "数据分析", iconFont: "icon-bingtu" },
+        // { id: 8, menuName: "Locations", iconFont: "icon-weizhi" },
+        { id: 9, menuName: "设置", iconFont: "icon-shezhi" },
         { id: 10, menuName: "Logout", iconFont: "icon-jinru" }
       ],
       themeDark: false
     };
   },
   mounted() {
+    localStorage.setItem('theme-color',"light");
     const savedTheme = localStorage.getItem('theme-color');
     if (savedTheme) {
       this.themeDark = savedTheme === 'dark';
+      this.$emit('update-theme', this.themeDark);
     }
   },
   methods: {
     changeDark() {
       this.themeDark = !this.themeDark;
       localStorage.setItem('theme-color', this.themeDark ? "dark" : "light");
-    }
+      this.$emit('update-theme', this.themeDark);
+    },
+
   }
 };
 </script>
 
 <style lang='scss' scoped>
 @import url(../assets/iconfont/iconfont.css);
+@font-face {
+  font-family: Marmelad_Regular;
+  font-weight: normal;
+  src: url(~/assets/font/Marmelad-Regular.ttf) format("truetype");
+  text-rendering: optimizeLegibility;
+}
+
 
 div.component-root {
-
   --theme-text-color: rgb(131, 128, 155);
   --theme-info-text-color: rgb(0, 0, 0);
   --theme-hover-color: rgb(103, 56, 223);
   --theme-hover-menu-color: rgb(248, 247, 255);
-  --bg-color: rgb(255, 255, 255);
+  --bg-color: rgb(240, 240, 240);
+  --theme-item-color:black;
+  //--bg-color:lightgray;
 }
+
 
 
 div.component-root.theme-color-dark {
@@ -86,26 +100,32 @@ div.component-root.theme-color-dark {
   --theme-hover-color: rgb(255, 255, 255);
   --theme-hover-menu-color: rgb(36, 31, 53);
   --bg-color: rgb(31, 30, 38);
+  --theme-item-color: lightgray;
 }
 
+
 .menu-wrapper {
-  width: 90px;
+  margin-left: 25px;
+  width: 70px;
   border-radius: 20px;
   background-color: var(--bg-color);
-  padding: 20px;
+  padding: 10px;
   box-sizing: border-box;
   transition: 0.6s;
   overflow: hidden;
+  //position: absolute;
+  display: flex;
+  flex-direction: column;
 }
 
 .menu-title {
-  padding-bottom: 20px;
+  padding-bottom: 0px;
   box-sizing: border-box;
-  // border-bottom: 1px solid rgb(229, 233, 236);
+  border-bottom: 1px solid rgb(229, 233, 236);
   margin-bottom: 20px;
   .title-text {
     margin-left: 10px;
-    font-family: "BasketBall";
+    font-family: Marmelad_Regular;
     font-size: 30px;
     vertical-align: middle;
     opacity: 0;
@@ -147,16 +167,28 @@ div.component-root.theme-color-dark {
     }
   }
 }
-
+.menu-content{
+  border-top: 1px solid var(--theme-text-color);
+  margin-top: 10px;
+}
 .menu-content .menu-list .menu-list-item {
+  font-family: Marmelad_Regular,SansSerif;
+  font-weight: 700;
   cursor: pointer;
   width: 100%;
   height: 50px;
-  font-size: 18px;
   position: relative;
   border-radius: 10px;
-  padding-left: 10px;
+  padding-left: 15px;
   white-space: nowrap;
+  //display: flex;
+  .iconfont{
+    //top:60%;
+    //transform: translateY(-50%);
+    font-size: 18px;
+    color: var(--theme-item-color);
+  }
+
   .block {
     width: 6px;
     height: 25px;
@@ -170,10 +202,11 @@ div.component-root.theme-color-dark {
     opacity: 0;
   }
   .item-name {
+
     line-height: 50px;
     display: inline-block;
     margin-left: 10px;
-    font-size: 18px;
+    font-size: 15px;
     color: var(--theme-text-color);
     font-weight: 100;
     transition: 0.6s;
@@ -197,7 +230,8 @@ div.component-root.theme-color-dark {
     transform: translateY(-50%);
     display: inline-block;
     opacity: 0;
-    margin-left: 10px;
+    margin-left: 20px;
+    margin-top: 3px;
     .check-ipt {
       display: none;
     }
@@ -232,7 +266,7 @@ div.component-root.theme-color-dark {
 }
 
 .menu-wrapper:hover {
-  width: 250px;
+  width: 220px;
   .menu-title .title-text {
     opacity: 1;
   }

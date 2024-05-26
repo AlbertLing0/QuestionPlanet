@@ -28,14 +28,14 @@ export default defineComponent({
           if (response.data === 'success'){
             console.log(response.data);
             router.push('/');
-            }
+          }
         });
       } catch (error) {
         console.error('Login failed:', error);
       }
-    
+
     };
-    
+
     // fetchUserData();
 
     return {

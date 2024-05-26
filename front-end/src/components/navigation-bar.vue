@@ -14,8 +14,8 @@ const props = defineProps({
     type: String,
     default: '#/login'
   },
-  indexLink:{
-    type:String,
+  indexLink: {
+    type: String,
     default: '#/'
   }
 });
@@ -29,7 +29,9 @@ const props = defineProps({
         <li v-for="link in navLinks" :key="link">{{ link }}</li>
       </ul>
     </nav>
-    <a :href="ctaLink" class="cta"><button>{{ ctaText }}</button></a>
+    <a :href="ctaLink" class="cta">
+      <button>{{ ctaText }}</button>
+    </a>
   </header>
 </template>
 
