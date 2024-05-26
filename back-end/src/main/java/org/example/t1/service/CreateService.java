@@ -6,35 +6,22 @@ package org.example.t1.service;
  * @date 2024/5/24 22:28
  */
 public interface CreateService {
-    /**
-     * @Description  创建一份全新问卷
-     * @param userid
-     * @return java.lang.String
-     * @author 郑悦
-     * @date 2024/5/25 14:05
-    **/
-    String createQuestionnaire(Integer userid);
-
-    String deleteQuestionnaire(Integer questionnaireId);
-
-    /**
-     * @Description  获取问题
-     * @param questionnaireId
-     * @return java.lang.String
-     * @author 郑悦
-     * @date 2024/5/25 14:05
-    **/
-    String getQuestionList(Integer questionnaireId);
-
-    String saveQuestionnaireOutline(String questionnaire);
-
-    String saveQuestionnaire(String questionnaire, String questionList);
-
-    String getQuestionnaireOutline(Integer questionnaireId);
-
-    String saveOneQuestion(String question, Integer questionnaireId);
-
-    String releaseQuestionnaire(Integer questionnaireId);
-
-    String closeQuestionnaire(Integer questionnaireId);
+    //通过用户名新建问卷
+    String createQuePaper(String username);
+    //通过问卷id删除问卷
+    String deleteQuePaper(Integer quePaperId);
+    //获取问卷的问题列表
+    String getQuestionList(Integer quePaperId);
+    //保存问卷标题内容等
+    String saveQuePaperOutline(String quePaper);
+    //保存问卷(带问题)
+    String saveQuePaper(String quePaper, String questionList);
+    //获取问卷标题内容等
+    String getQuePaperOutline(Integer quePaperId);
+    //保存问题
+    String saveOneQuestion(String question, Integer quePaperId);
+    //删除问卷
+    String releaseQuePaper(Integer quePaperId);
+    //关闭问卷
+    String closeQuePaper(Integer quePaperId);
 }

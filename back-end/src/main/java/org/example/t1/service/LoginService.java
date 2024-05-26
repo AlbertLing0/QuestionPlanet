@@ -81,6 +81,27 @@ public class LoginService {
         }
     }
 
+    public String resetPassword(String username, String password, String email, Integer code) {
+        User user = userDao.findDistinctByUsername(username);
+        if(user==null){
+            return "userNotExist";
+        }
+        if(!validate(password, PASSWORD_REGEX)){
+            return "invalidPassword";
+        }
+        if(!user.getEmail().equals(email)){
+            return "errorEmail";
+        }
+        if(Objects.equals(StaticValues.emailCode, code)){
+            user.setPassword(password);
+            userDao.save(user);
+            return "success";
+        }else{
+            return "errorEmailCode";
+        }
+    }
+
+
     public List<User> allUsers(){
         return userDao.findAll();
     }

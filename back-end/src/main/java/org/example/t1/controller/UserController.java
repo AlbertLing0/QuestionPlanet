@@ -38,4 +38,9 @@ public class UserController {
         return loginService.login(username,password);
     }
 
+    @RequestMapping(value = "api/reset/password", method = RequestMethod.POST)
+    public String resetPassword(String username,String password,String email, Integer code){
+        return loginService.resetPassword(username, password, email, code);
+    }
+
 }

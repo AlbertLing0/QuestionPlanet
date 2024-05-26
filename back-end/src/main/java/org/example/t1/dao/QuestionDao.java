@@ -14,4 +14,5 @@ import java.util.List;
 public interface QuestionDao extends JpaRepository<Question, Integer> {
     List<Question> findAllByQuePaperId(Integer quePaperId);
 
+    Question findDistinctById(Integer Id);
 }

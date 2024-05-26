@@ -1,5 +1,6 @@
 package org.example.t1.dao;
 
+import com.google.gson.JsonElement;
 import org.example.t1.entity.QuePaper;
 import org.example.t1.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ import java.util.List;
  */
 public interface QuePaperDao extends JpaRepository<QuePaper, Integer> {
     List<QuePaper> findAllByUserId(Integer userId);
+
+//    List<QuePaper> findAllByUsername(String username);
 }

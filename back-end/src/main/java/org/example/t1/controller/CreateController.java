@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author 郑悦
- * @Description:
+ * @author 张喆宇
+ * @Description:主要实现问卷创建部分的接口
  * @date 2024/5/25 14:07
  */
 @RestController
@@ -24,30 +24,52 @@ public class CreateController {
         this.gson = gson;
     }
 
-//    @GetMapping("/api/createQuestionnaire")
-//    public String createQuestionnaire(@Param("userId") Integer userId) {
-//        return createService.createQuestionnaire(userId);
-//    }
-//
-//    @PostMapping("/api/saveQuestionnaire")
-//    public String saveQuestionnaire(@RequestBody String body) {
-//        String questionList = gson.fromJson(body, JsonObject.class).get("questionList").toString();
-//        String questionnaire = gson.fromJson(body, JsonObject.class).get("questionnaire").toString();
-//        return createService.saveQuestionnaire(questionnaire, questionList);
-//    }
-//
-//    @PostMapping("/api/saveQuestionnaireOutline")
-//    public String saveQuestionnaireOutline(@RequestBody String questionnaire) {
-//        return createService.saveQuestionnaireOutline(gson.fromJson(questionnaire, JsonObject.class).get("questionnaire").toString());
-//    }
-//
-//    @PostMapping("/api/saveOneQuestion")
-//    public String saveOneQuestion(@RequestBody String oneQuestion, @Param("questionnaireId") Integer questionnaireId) {
-//        return createService.saveOneQuestion(gson.fromJson(oneQuestion, JsonObject.class).get("question").toString(), questionnaireId);
-//    }
-//
-//    @GetMapping("/api/deleteQuestionnaire")
-//    public String deleteQuestionnaire(@Param("questionnaireId") Integer questionnaireId) {
-//        return createService.deleteQuestionnaire(questionnaireId);
-//    }
+    @GetMapping("/api/createQuePaper")
+    public String createQuePaper(String username) {
+        return createService.createQuePaper(username);
+    }
+
+    @PostMapping("/api/saveQuePaper")
+    public String saveQuePaper(@RequestBody String body) {
+        String questionList = gson.fromJson(body, JsonObject.class).get("questionList").toString();
+        String quePaper = gson.fromJson(body, JsonObject.class).get("quePaper").toString();
+        return createService.saveQuePaper(quePaper, questionList);
+    }
+
+    @PostMapping("/api/saveQuePaperOutline")
+    public String saveQuePaperOutline(@RequestBody String quePaper) {
+        return createService.saveQuePaperOutline(gson.fromJson(quePaper, JsonObject.class).get("quePaper").toString());
+    }
+
+    @PostMapping("/api/saveOneQuestion")
+    public String saveOneQuestion(@RequestBody String oneQuestion, @Param("quePaperId") Integer quePaperId) {
+        return createService.saveOneQuestion(gson.fromJson(oneQuestion, JsonObject.class).get("question").toString(), quePaperId);
+    }
+
+    @GetMapping("/api/deleteQuePaper")
+    public String deleteQuestionnaire(@Param("quePaper") Integer quePaper) {
+        return createService.deleteQuePaper(quePaper);
+    }
+
+    @GetMapping("/api/getQuestionList")
+    public String getQuestionList(@Param("quePaperId") Integer quePaperId) {
+        return createService.getQuestionList(quePaperId);
+    }
+
+    @GetMapping("/api/getQuePaperOutline")
+    public String getQuestionnaireOutline(@Param("quePaperId") Integer quePaperId) {
+        return createService.getQuePaperOutline(quePaperId);
+    }
+
+    @PostMapping("/api/releaseQuePaper")
+    public String releaseQuePaper(@Param("quePaperId") Integer quePaperId) {
+        return createService.releaseQuePaper(quePaperId);
+    }
+
+    @PostMapping("/api/closeQuePaper")
+    public String closeQuestionnaire(@Param("quePaperId") Integer quePaperId) {
+        return createService.closeQuePaper(quePaperId);
+    }
+
+
 }
