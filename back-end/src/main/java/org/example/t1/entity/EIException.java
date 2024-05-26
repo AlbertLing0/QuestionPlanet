@@ -16,23 +16,6 @@ public class EIException extends RuntimeException {
         this.msg = msg;
     }
 
-    public EIException(String msg, Throwable e) {
-        super(msg, e);
-        this.msg = msg;
-    }
-
-    public EIException(String msg, int code) {
-        super(msg);
-        this.msg = msg;
-        this.code = code;
-    }
-
-    public EIException(String msg, int code, Throwable e) {
-        super(msg, e);
-        this.msg = msg;
-        this.code = code;
-    }
-
     public String getMsg() {
         return msg;
     }
