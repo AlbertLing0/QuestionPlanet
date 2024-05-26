@@ -67,16 +67,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
 @import url(../assets/iconfont/iconfont.css);
 
 div.component-root {
+
   --theme-text-color: rgb(131, 128, 155);
   --theme-info-text-color: rgb(0, 0, 0);
   --theme-hover-color: rgb(103, 56, 223);
   --theme-hover-menu-color: rgb(248, 247, 255);
   --bg-color: rgb(255, 255, 255);
 }
+
 
 div.component-root.theme-color-dark {
   --theme-text-color: rgb(141, 139, 164);
@@ -99,7 +101,7 @@ div.component-root.theme-color-dark {
 .menu-title {
   padding-bottom: 20px;
   box-sizing: border-box;
-  border-bottom: 1px solid rgb(229, 233, 236);
+  // border-bottom: 1px solid rgb(229, 233, 236);
   margin-bottom: 20px;
   .title-text {
     margin-left: 10px;
