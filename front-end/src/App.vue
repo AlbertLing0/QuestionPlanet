@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="app_sub">
     <div id="BG">
       <planet-b-g v-if="$route.meta.requiresParallax"/>
     </div>
@@ -19,7 +19,7 @@ export default {
 </script>
 
 <style>
-#BG{
+#BG {
   position: absolute;
   width: 100%;
   height: 100vh;
