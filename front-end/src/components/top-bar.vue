@@ -32,7 +32,16 @@ export default {
 
 <style scoped>
 .top-bar-logo{
-  border-bottom: 1px solid rgb(--border-color);
-  background-color: var(--pane-color);
+  border-bottom: 3px solid var(--border-color);
+  .logo{
+    margin-left: 30px;
+    margin-top: -15px;
+    margin-bottom: -15px;
+    &:hover{
+      cursor: pointer;
+      opacity: 0.8;
+    }
+  }
+  //background-color: var(--pane-color);
 }
 </style>

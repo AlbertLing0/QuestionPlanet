@@ -26,7 +26,7 @@ const routes = [{
 },{
     path: "/about",
     component:About,
-    meta: { requiresParallax: false }
+    meta: { requiresParallax: true }
 },{
     path: '/:pathMatch(.*)*',
     name: 'NotFound',

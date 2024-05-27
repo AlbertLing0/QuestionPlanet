@@ -44,9 +44,9 @@ export default {
   --theme-info-text-color: rgb(0, 0, 0);
   --theme-hover-color: rgb(103, 56, 223);
   --theme-hover-menu-color: rgb(248, 247, 255);
-  --bg-color: rgb(240, 240, 240);
-  --pane-color: rgb(211, 211, 211);
-  --border-color: rgb(229, 233, 236);
+  --bg-color: rgb(256, 256, 256,0.8);
+  --pane-color: rgb(240, 240, 240);
+  --border-color: rgb(26, 22, 19);
   --theme-item-color: rgb(0, 0, 0);
   background-color: var(--bg-color);
   width: 100vw;
@@ -58,15 +58,13 @@ export default {
   --theme-info-text-color: rgb(255, 255, 255);
   --theme-hover-color: rgb(255, 255, 255);
   --theme-hover-menu-color: rgb(36, 31, 53);
-  --bg-color: rgb(31, 30, 38);
+  --bg-color: rgb(31, 30, 38,0.8);
   --pane-color: rgb(64, 64, 64);
-  --border-color: rgb(26, 22, 19);
+  --border-color: rgb(229, 233, 236);
   --theme-item-color: rgb(211, 211, 211);
 }
 
-#top-bar{
-  margin-left: 30px;
-}
+
 #side-bar{
   position: absolute;
   top: 50%; /* 将顶部定位到页面垂直中点 */
