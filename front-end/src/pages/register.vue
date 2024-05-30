@@ -16,6 +16,10 @@ export default defineComponent({
       EmailVerificationCode: ''
     };
   },
+   setup() {
+    const router = useRouter(); // 在 setup 函数中初始化 router
+    return { router }; // 返回 router，使其可在模板和方法中使用
+  },
   methods: {
     async sendVerificationCode() {
       const params = new URLSearchParams();
@@ -38,7 +42,6 @@ export default defineComponent({
     },
     async register() {
       const params = new URLSearchParams();
-      const router = useRouter();
       params.append('email', this.Email);
       params.append('username', this.UserName);
       params.append('password', this.Password);
@@ -50,7 +53,7 @@ export default defineComponent({
         if (response.data === 'success') {
           alert('注册成功');
           console.log('注册成功');
-          router.push('/');
+          this.router.push('/');
         } else {
           alert('注册失败');
           console.error('注册失败', response);

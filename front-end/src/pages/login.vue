@@ -39,6 +39,7 @@ export default defineComponent({
     // fetchUserData();
 
     return {
+      router,
       tableData,
       username,
       password,
