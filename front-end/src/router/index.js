@@ -10,6 +10,7 @@ import NotFound from '~/pages/404.vue'
 import LoginPage from '~/pages/login.vue'
 import RegisterPage from '~/pages/register.vue'
 import design from '~/pages/Design.vue'
+import FillIn from '~/pages/FillIn.vue'
 
 const routes = [{
     path:"/",
@@ -36,6 +37,9 @@ const routes = [{
 },{
     path: "/design/:id",
     component: design
+},{
+    path: "/FillIn/:id",
+    component: FillIn
 }]
 
 

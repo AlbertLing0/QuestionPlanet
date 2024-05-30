@@ -82,22 +82,92 @@ var template = {
     radio: {
             "type": "radio",
             "topic": "单选题",
-            "options": ["选项1","选项2","选项3","选项4"]
+            "options": ["选项1","选项2","选项3","选项4"],
+            "isMandatory": false
         },
     checkbox: {
             "type": "checkbox",
             "topic": "多选题",
-            "options": ["选项1","选项2","选项3","选项4"]
+            "options": ["选项1","选项2","选项3","选项4"],
+            "isMandatory": false
         },
     textarea: {
             "type": "textarea",
             "topic": "文本题",
             "isMandatory": false
-        }
+        },
+	rating: {
+		"type": "rating",
+		"topic": "打分题（默认1-5分取整数）",
+		"isMandatory": false
+	}
+};
+
+var quesTemps = {
+	normal: [
+		{
+			"type": "radio",
+			"topic": "单选题",
+			"options": ["选项1","选项2","选项3","选项4"]
+		},
+		{
+			"type": "checkbox",
+			"topic": "多选题",
+			"options": ["选项1","选项2","选项3","选项4"]
+		},
+		{
+			"type": "textarea",
+			"topic": "文本题",
+			"isMandatory": false
+		}
+	],
+	voting: [
+		{
+			"type": "radio",
+			"topic": "单选投票",
+			"options": ["选项1","选项2","选项3","选项4"],
+			"isMandatory": false
+		},{
+			"type": "checkbox",
+			"topic": "多选投票",
+			"options": ["选项1","选项2","选项3","选项4"],
+			"isMandatory": false
+		}
+	],
+	signup: [
+		{
+			"type": "textarea",
+			"topic": "姓名",
+			"isMandatory": false
+		},{
+			"type": "textarea",
+			"topic": "学号",
+			"isMandatory": false
+		},{
+			"type": "textarea",
+			"topic": "手机号",
+			"isMandatory": false
+		},{
+			"type": "radio",
+			"topic": "报名项目（单选）",
+			"options": ["选项1","选项2","选项3","选项4"],
+			"isMandatory": false
+		},{
+			"type": "checkbox",
+			"topic": "报名项目（多选）",
+			"options": ["选项1","选项2","选项3","选项4"],
+			"isMandatory": false
+		},{
+			"type": "textarea",
+			"topic": "其他信息",
+			"isMandatory": false
+		}
+	]
 };
 
 
 export default {
+	quesTemps,
 	template,
 	date
 }

@@ -1,5 +1,5 @@
 <script>
-import { defineComponent, ref } from 'vue';
+import {defineComponent, inject, ref, watchEffect} from 'vue';
 import { useRouter } from 'vue-router';
 import PlanetBG from '~/components/planetBG.vue';
 import NavBar from "~/components/navigation-bar.vue";
@@ -12,10 +12,12 @@ export default defineComponent({
 
   setup() {
     const router = useRouter();
+    let globalUsername = inject('Username');
     const tableData = ref([]);
-    const username = ref('');
+    const username = ref(globalUsername);
     const password = ref('');
 
+    // 登录提交方法
     // 登录提交方法
     const submitLogin = async () => {
       try {
@@ -26,8 +28,9 @@ export default defineComponent({
           }
         }).then(response => {
           if (response.data === 'success'){
+            globalUsername=username.value;
             console.log(response.data);
-            router.push('/');
+            router.push('/about');
           }
         });
       } catch (error) {
@@ -43,7 +46,7 @@ export default defineComponent({
       tableData,
       username,
       password,
-      submitLogin
+      submitLogin,
     };
   }
 

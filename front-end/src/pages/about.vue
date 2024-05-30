@@ -3,8 +3,16 @@
     <div id="top-bar">
       <topBar :themeDark="themeDark"/>
     </div>
-    <div id="side-bar">
-      <sideBar @toggle-theme="toggleTheme"/>
+    <div class="bottom-box">
+      <div id="side-bar">
+        <sideBar @toggle-theme="toggleTheme"/>
+      </div>
+      <div class="right-box">
+        <div class="head-text">
+          欢迎回来，{{nowUserName}}。
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -12,9 +20,16 @@
 <script>
 import sideBar from "~/components/side-bar.vue";
 import topBar from "~/components/top-bar.vue";
+import {inject} from "vue";
 export default {
   name:"about",
   components: {sideBar, topBar},
+  setup(){
+    const nowUserName=inject('Username');
+    return {
+      nowUserName
+    }
+  },
   methods: {
     /** @param {boolean} themeDark */
     setThemeDark(themeDark) {
@@ -48,9 +63,11 @@ export default {
   --pane-color: rgb(240, 240, 240);
   --border-color: rgb(26, 22, 19);
   --theme-item-color: rgb(0, 0, 0);
+  --theme-text-box-color:rgb(250,250,250,0.5);
   background-color: var(--bg-color);
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 #component-root.theme-dark {
@@ -62,19 +79,53 @@ export default {
   --pane-color: rgb(64, 64, 64);
   --border-color: rgb(229, 233, 236);
   --theme-item-color: rgb(211, 211, 211);
+  --theme-text-box-color:rgb(90,90,90,0.5);
+}
+@font-face {
+  font-family: Marmelad_Regular;
+  font-weight: normal;
+  src: url(~/assets/font/Marmelad-Regular.ttf) format("truetype");
+  text-rendering: optimizeLegibility;
 }
 
+.bottom-box{
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  #side-bar{
+    position: relative;
+    flex:0;
+    margin-top: 5vh;
+    //top: 50vh; /* 将顶部定位到页面垂直中点 */
+    //transform: translateY(-50%); /* 使用负的自身高度的一半来调整位置，实现垂直居中 */
+    z-index: 10;
+  }
+  .right-box{
+    flex:1;
+    position: relative;
+    margin-left:30px;
+    margin-right: 40px;
+    margin-top: 5vh;
+    z-index:10;
+    height: 80vh;
+    background-color: var(--theme-text-box-color);
+    border-radius: 20px;
+    padding: 3% 5%;
+    .head-text{
+      font-size: 30px;
+      font-family: SansSerif;
+      color: var(--theme-info-text-color);
+      align-items: flex-end;
+    }
 
-#side-bar{
-  position: absolute;
-  top: 50%; /* 将顶部定位到页面垂直中点 */
-  transform: translateY(-50%); /* 使用负的自身高度的一半来调整位置，实现垂直居中 */
-  z-index: 10;
+  }
 }
 body {
   margin: 0;
   padding: 0;
-  background-size: 100vw 100vh;
+  //background-size: 100vw 100vh;
+
+
 }
 
 </style>

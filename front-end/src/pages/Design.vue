@@ -10,8 +10,8 @@
 				:class="{inlineShow: titleEditing}"
 				@focus="_title = title"
 				@keyup.esc="cancelTitleEdit()"
-				@blur="ifTitleBlank()"
-				@keyup.enter="ifTitleBlank()">
+				@blur="doneTitleEdit()"
+				@keyup.enter="doneTitleEdit()">
             </header>
 
 
@@ -25,10 +25,10 @@
 						<input type="text"
 						v-focus
 						v-model="topic"
-						@focus="_topic = topic"
-						@blur="curIndex=''; topic=''"
+						@focus="topic = item.topic; _topic = topic"
+						@blur="doneTopicEdit(index); curIndex=''; topic=''"
 						@keyup.esc="cancelTopicEdit()"
-						@keyup.enter="doneTopicEdit(index)">
+						@keyup.enter="doneTopicEdit(index); topic=''">
 						<span v-if="item.isMandatory"> *</span>
 					</h3>
 					<template v-if="item.type === 'textarea'">
@@ -36,16 +36,27 @@
 						<label id="require-check">
 							<input type="checkbox"
 							v-model:="item.isMandatory">
-							此题是否必填
+							是否必填？
+						</label>
+						<label id="require-check" style="margin-top: 2rem; font-size: 18px; color: orange;">
+							文本题
 						</label>
 					</template>
-                    <!-- <template v-if="item.type === 'textarea'">
-                        <textarea rows="8" cols="80" v-model="item.value"></textarea>
-                        <label id="require-check">
-                             <input type="checkbox" v-model="item.isMandatory">
-                                此题是否必填
-                        </label>
-                    </template> -->
+
+					<ul v-else-if="item.type === 'rating'">
+						<div style="font-size: 40px;" id="stars">☆☆☆☆☆</div>
+						<label>
+							<label id="require-check">
+								<input type="checkbox"
+								v-model:="item.isMandatory">
+								是否必填？
+							</label>
+							<label id="require-check" style="margin-top: 2rem; font-size: 18px; color: orange;">
+								打分题
+							</label>
+						</label>
+					</ul>
+
 					<ul v-else class="options-list" >
 						<li v-for="(option, optIndex) in item.options"
 							:class="{optionEditing: curOptIndex === optIndex}">
@@ -54,10 +65,10 @@
 							<input type="text"
 							v-focus
 							v-model="optionText"
-							@focus="_optionText = optionText"
-							@blur="curIndex=''; optionText=''"
+							@focus="optionText = option; _optionText = optionText"
+							@blur="doneOptionEdit(index, optIndex); curIndex=''; optionText=''"
 							@keyup.esc="cancelOptionEdit()"
-							@keyup.enter="doneOptionEdit(index, optIndex)">
+							@keyup.enter="doneOptionEdit(index, optIndex); optionText=''">
 
 							<ul class="opt-ctrl">
 								<li v-if="optIndex !== 0"
@@ -68,28 +79,45 @@
 								<li @click="delOption(optIndex, item.options)">删除</li>
 							</ul>
 						</li>
-						<label id="require-check" v-if="item.type === 'radio'">
-							此题为单选题
+						<label v-if="item.type === 'radio'">
+							<label id="require-check">
+								<input type="checkbox"
+								v-model:="item.isMandatory">
+								是否必填？
+							</label>
+							<label id="require-check" style="margin-top: 2rem; font-size: 18px; color: orange;">
+								单选题
+							</label>
 						</label>
-						<label id="require-check" v-else>
-							此题为多选题
+						<label v-else>
+							<label id="require-check">
+								<input type="checkbox"
+								v-model:="item.isMandatory">
+								是否必填？
+							</label>
+							<label id="require-check" style="margin-top: 2rem; font-size: 18px; color: orange;">
+								多选题
+							</label>
 						</label>
 					</ul>
+
 					<ul class="operat-list">
 						<li v-if="index !== 0"
-							@click="moveUp(index)">上移</li>
+							@click="moveUp(index, questions)">上移</li>
 						<li v-if="index !== questions.length - 1"
-							@click="moveDown(index)">下移</li>
+							@click="moveDown(index, questions)">下移</li>
 						<li @click="reuse(index)">复用</li>
 						<li @click="delQuestion(index)">删除</li>
 					</ul>
 					<div></div>
 				</section>
+
 				<div class="add-box">
 					<p class="qu-type" :class="{expand: isAdding}">
 						<span @click="addType('radio')">单选题</span>
 						<span @click="addType('checkbox')">多选题</span>
 						<span @click="addType('textarea')">文本题</span>
+						<span @click="addType('rating')">打分题</span>
 					</p>
 
 					<p class="add-btn" @click="isAdding = !isAdding;">
@@ -97,6 +125,8 @@
 					</p>
 				</div>
 			</div>
+
+
 			<footer>
 				<div class="date-part">
 					<label>问卷截止日期
@@ -116,6 +146,7 @@
 				</div>
 			</footer>
 	</div>
+
 	<div class="overlay" v-show="isShowPrompt">
 		<div class="prompt-box">
 			<header>
@@ -137,20 +168,18 @@ import Data from '../components/designData/data.js';
 import Store from '../components/designData/store.js';
 import Datepicker from '../components/Datepicker.vue';
 // import { defineComponent, ref } from 'vue';
-import PlanetBG from '~/components/planetBG.vue';
 import request from '../utils/request';
+// import { ref } from 'vue';
+// import { VueDraggable } from 'vue-draggable-plus';
 
 export default {
 	name: 'design',
 	components: {
 		'date-components': Datepicker
 	},
-    components: {
-        PlanetBG
-    },
 	data() {
 		return {
-			index: '',
+			index: 0,
 			quData: {},
 			questions: [],
 			questionTemplate:{},
@@ -171,6 +200,8 @@ export default {
 			topicEditing: false,
 			isShowPrompt: false,
 			isShowDatepicker: false,
+			requestIn: {},
+			requestout: {}
 		}
 	},
 
@@ -206,7 +237,7 @@ export default {
 
 	computed: {
 		tempTitle() {
-			return this.title /*|| this.quData.title*/;
+			return /*this.quData.title || */this.title;
 		}
 	},
 
@@ -228,7 +259,7 @@ export default {
 				//this.quData = this.quList[id - 1];
 			// }
 
-			this.date = '2018-12-31'/*this.quData.time*/;
+			this.date = '2024-06-01'/*this.quData.time*/;
 			// this.title = this.quData.title;
 			// this.index = this.quData.id - 1;
 			this.questionTemplate = Data.template;
@@ -251,7 +282,7 @@ export default {
 			this.title = this._title;
 		},
 
-        ifTitleBlank() {
+        doneTitleEdit() {
             if(this.title === ''){
                 this.title = this._title;
             }
@@ -350,25 +381,7 @@ export default {
 				return;
 			}
 			let ques = {};
-			if(type === 'radio'){
-				ques = {
-					"type": "radio",
-					"topic": "单选题",
-					"options": ["选项1","选项2","选项3","选项4"]
-				};
-			}else if(type === 'checkbox'){
-				ques = {
-					"type": "checkbox",
-					"topic": "多选题",
-					"options": ["选项1","选项2","选项3","选项4"]
-				};
-			}else{
-				ques = {
-					"type": "textarea",
-					"topic": "文本题",
-					"isMandatory": false
-				};
-			}
+			ques = JSON.parse(JSON.stringify(this.questionTemplate[type]));
 			this.questions.push(ques);
 		},
 
@@ -405,7 +418,7 @@ export default {
 			yield this.showPrompt(`确认要保存并发布问卷？`);
 			yield (() => {
 				this.quData.state = 1;
-				this.quData.stateName = '发布中';
+				// this.quData.stateName = '发布中';
 				this.saveData();
 			})();
 			yield this.$router.push({path: '/'});
@@ -513,6 +526,10 @@ export default {
 			}
 
 			#require-check {
+				display: block;
+			}
+
+			#stars {
 				display: block;
 			}
 
@@ -739,4 +756,72 @@ export default {
 	display: none;
 }
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.prompt-box {
+  width: 300px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+header span {
+  margin-right: auto; /* 自动向右外边距，将文本推至中间 */
+  color: orange; /* 文本颜色设置为橘色 */
+  font-weight: bold; /* 文本加粗 */
+}
+
+header a {
+  text-decoration: none;
+  color: #333;
+  font-size: 24px;
+  cursor: pointer;
+}
+header a:hover {
+  color: #777;
+}
+
+p {
+  margin: 10px 0;
+  text-align: center;
+}
+
+footer {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+footer span {
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+footer span:hover {
+  background-color: #f0f0f0;
+}
 </style>
