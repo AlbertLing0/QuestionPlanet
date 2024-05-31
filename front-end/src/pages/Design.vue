@@ -21,21 +21,21 @@
 				:class="{nowEditing: curIndex === index && topicEditing, optEditing: curIndex === index}">
 					<h3 @click="curIndex = index; curOptIndex=''; topicEditing = true">
 						<span class="qu-num">{{`Q${index + 1}`}}</span>
-						<span class="qu-topic">{{ item.topic }}</span>
+						<span class="qu-topic">{{ item.questionTitle }}</span>
 						<input type="text"
 						v-focus
 						v-model="topic"
-						@focus="topic = item.topic; _topic = topic"
+						@focus="topic = item.questionTitle; _topic = topic"
 						@blur="doneTopicEdit(index); curIndex=''; topic=''"
 						@keyup.esc="cancelTopicEdit()"
 						@keyup.enter="doneTopicEdit(index); topic=''">
-						<span v-if="item.isMandatory"> *</span>
+						<span v-if="item.questionIsMandatory"> *</span>
 					</h3>
-					<template v-if="item.type === 'textarea'">
+					<template v-if="item.questionType === 3">
 						<textarea rows="8" cols="80"></textarea>
 						<label id="require-check">
 							<input type="checkbox"
-							v-model:="item.isMandatory">
+							v-model:="item.questionIsMandatory">
 							是否必填？
 						</label>
 						<label id="require-check" style="margin-top: 2rem; font-size: 18px; color: orange;">
@@ -43,12 +43,12 @@
 						</label>
 					</template>
 
-					<ul v-else-if="item.type === 'rating'">
+					<ul v-else-if="item.questionType === 4">
 						<div style="font-size: 40px;" id="stars">☆☆☆☆☆</div>
 						<label>
 							<label id="require-check">
 								<input type="checkbox"
-								v-model:="item.isMandatory">
+								v-model:="item.questionIsMandatory">
 								是否必填？
 							</label>
 							<label id="require-check" style="margin-top: 2rem; font-size: 18px; color: orange;">
@@ -58,7 +58,7 @@
 					</ul>
 
 					<ul v-else class="options-list" >
-						<li v-for="(option, optIndex) in item.options"
+						<li v-for="(option, optIndex) in item.questionOption"
 							:class="{optionEditing: curOptIndex === optIndex}">
 							<span class="optionText"
 								  @click="curIndex=index; curOptIndex=optIndex; topicEditing = false">{{ option }}</span>
@@ -72,17 +72,17 @@
 
 							<ul class="opt-ctrl">
 								<li v-if="optIndex !== 0"
-								@click="moveUp(optIndex, item.options)">上移</li>
-								<li v-if="optIndex !== item.options.length - 1"
-								@click="moveDown(optIndex, item.options)">下移</li>
-								<li v-else @click="addOption(item.options)">添加</li>
-								<li @click="delOption(optIndex, item.options)">删除</li>
+								@click="moveUp(optIndex, item.questionOption)">上移</li>
+								<li v-if="optIndex !== item.questionOption.length - 1"
+								@click="moveDown(optIndex, item.questionOption)">下移</li>
+								<li v-else @click="addOption(item.questionOption)">添加</li>
+								<li @click="delOption(optIndex, item.questionOption)">删除</li>
 							</ul>
 						</li>
-						<label v-if="item.type === 'radio'">
+						<label v-if="item.questionType === 1">
 							<label id="require-check">
 								<input type="checkbox"
-								v-model:="item.isMandatory">
+								v-model:="item.questionIsMandatory">
 								是否必填？
 							</label>
 							<label id="require-check" style="margin-top: 2rem; font-size: 18px; color: orange;">
@@ -92,7 +92,7 @@
 						<label v-else>
 							<label id="require-check">
 								<input type="checkbox"
-								v-model:="item.isMandatory">
+								v-model:="item.questionIsMandatory">
 								是否必填？
 							</label>
 							<label id="require-check" style="margin-top: 2rem; font-size: 18px; color: orange;">
@@ -180,7 +180,6 @@ export default {
 	data() {
 		return {
 			index: 0,
-			quData: {},
 			questions: [],
 			questionTemplate:{},
 			quList: Store.fetch(),
@@ -201,35 +200,35 @@ export default {
 			isShowPrompt: false,
 			isShowDatepicker: false,
 			requestIn: {},
-			requestout: {}
+			requestOut: {}
 		}
 	},
 
-	beforeRouterEnter(to, from, next) {
-		let id = to.params.id;
-		let item = {};
-		if (id !== 0) {
-			let length = Store.fetch().length;
-			if (id < 0 || id > length) {
-				alert('非法路由');
-				next('');
-			}
-			else {
-				item = Store.fetch()[id - 1];
-			}
+	// beforeRouterEnter(to, from, next) {
+	// 	let id = to.params.id;
+	// 	let item = {};
+	// 	if (id !== 0) {
+	// 		let length = Store.fetch().length;
+	// 		if (id < 0 || id > length) {
+	// 			alert('非法路由');
+	// 			next('');
+	// 		}
+	// 		else {
+	// 			item = Store.fetch()[id - 1];
+	// 		}
 
-			if (item.state === 0) {
-				next();
-			}
-			else {
-				alert('非法路由');
-				next('/');
-			}
-		}
-		else {
-			next();
-		}
-	},
+	// 		if (item.state === 0) {
+	// 			next();
+	// 		}
+	// 		else {
+	// 			alert('非法路由');
+	// 			next('/');
+	// 		}
+	// 	}
+	// 	else {
+	// 		next();
+	// 	}
+	// },
 
 	created() {
 		this.getData();
@@ -237,33 +236,39 @@ export default {
 
 	computed: {
 		tempTitle() {
-			return /*this.quData.title || */this.title;
+			return this.title;
 		}
 	},
 
 	methods: {
 		getData() {
-			// let id = this.$route.params.id;
+			this.requestIn = Data.test; //替换为传入的json
+			this.id = this.requestIn.id;
+			this.title = this.requestIn.title;
+			if(this.requestIn.endTime === null || this.requestIn.endTime === ""){
+				this.date = "2024-06-02";
+			}else{
+				this.date = this.requestIn.endTime;
+			}
 
-			// if (id === 0) {
-				// let item = {};
-				// item.id = this.quList.length + 1;
-				// item.title = `问卷调查${item.id}`;
-				// item.state = 0;
-				// item.stateName = '未发布';
-				// item.time = '2018-12-31';
-				// item.questions = [];
-				// this.quData = item;
-			// }
-			// else {
-				//this.quData = this.quList[id - 1];
-			// }
+			this.questions = this.requestIn.questionList;
+			if(this.questions.length === 0){
+				let type = this.requestIn.paperType;
+				if(type === 2){
+					this.questions = Data.quesTemps['voting'];
+				}else if(type === 3){
+					this.questions = Data.quesTemps['signup'];
+				}else{
+					this.questions = Data.quesTemps['normal'];
+				}
+			}
 
-			this.date = '2024-06-01'/*this.quData.time*/;
-			// this.title = this.quData.title;
-			// this.index = this.quData.id - 1;
 			this.questionTemplate = Data.template;
-			// this.questions = [...this.quData.questions];
+			if(this.title === null || this.title === ""){
+				this.title = "请在此输入标题";
+			}
+
+			this.requestOut = JSON.parse(JSON.stringify(this.requestIn));
 		},
 
 		changeDate(date) {
@@ -304,7 +309,7 @@ export default {
 			if(this.topic === ''){
 				this.topic = this._topic;
 			}
-			this.questions[index].topic = this.topic;
+			this.questions[index].questionTitle = this.topic;
 		},
 
 		doneOptionEdit(index, optIndex) {
@@ -386,21 +391,17 @@ export default {
 		},
 
 		saveData() {
-			if (this.questions.length < 1) {
-				this.errorPrompt(`每份问卷至少一个问题！`);
-				return;
-			}
+			// if (this.questions.length < 1) {
+			// 	this.errorPrompt(`每份问卷至少一个问题！`);
+			// 	return;
+			// }
 
-			this.quData.title = this.title;
-			this.quData.time = this.date;
-			this.quData.questions = [...this.questions];
+			// this.requestOut.title = this.title;
+			// this.requestOut.endTime = this.date.toString();
+			// this.requestOut.questionList = [...this.questions];
 
-			if (this.index === this.quList.length) {
-				this.quList.push(this.quData);
-			}
-			else {
-				this.quList.splice(this.index, 1, this.quData);
-			}
+			// 传回 this.requestOut
+
 		},
 
 		*backBtn() {
@@ -409,18 +410,15 @@ export default {
 		},
 
 		*saveBtn() {
-			yield this.showPrompt(`确认要保存问卷？`);
-			yield this.saveData();
+			yield this.showPrompt(`确认保存问卷并返回？`);
+			this.saveData();
 			yield this.$router.push({path: '/'});
 		},
 
 		*releaseBtn() {
-			yield this.showPrompt(`确认要保存并发布问卷？`);
-			yield (() => {
-				this.quData.state = 1;
-				// this.quData.stateName = '发布中';
-				this.saveData();
-			})();
+			yield this.showPrompt(`确认保存并发布问卷？问卷链接将为xxx`);
+			this.requestOut.state = 1;
+			this.saveData();
 			yield this.$router.push({path: '/'});
 		}
 	},

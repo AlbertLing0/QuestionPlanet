@@ -11,6 +11,7 @@ import LoginPage from '~/pages/login.vue'
 import RegisterPage from '~/pages/register.vue'
 import design from '~/pages/Design.vue'
 import FillIn from '~/pages/FillIn.vue'
+import ResetPassword from '~/pages/resetPassword.vue'
 
 const routes = [{
     path:"/",
@@ -25,6 +26,10 @@ const routes = [{
     component:RegisterPage,
     meta: { requiresParallax: true }
 },{
+    path: "/resetPassword",
+    component:ResetPassword,
+    meta: { requiresParallax: true }
+},{
     path: "/about",
     component:About,
     meta: { requiresParallax: true }
@@ -33,7 +38,6 @@ const routes = [{
     name: 'NotFound',
     component: NotFound,
     meta: { requiresParallax: false }
-
 },{
     path: "/design/:id",
     component: design

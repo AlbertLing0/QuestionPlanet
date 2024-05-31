@@ -80,94 +80,130 @@ var date = function(year, month) {
 
 var template = {
     radio: {
-            "type": "radio",
-            "topic": "单选题",
-            "options": ["选项1","选项2","选项3","选项4"],
-            "isMandatory": false
+            "questionType": 1,
+            "questionTitle": "单选题",
+            "questionOption": ["选项1","选项2","选项3","选项4"],
+            "questionIsMandatory": false
         },
     checkbox: {
-            "type": "checkbox",
-            "topic": "多选题",
-            "options": ["选项1","选项2","选项3","选项4"],
-            "isMandatory": false
+            "questionType": 2,
+            "questionTitle": "多选题",
+            "questionOption": ["选项1","选项2","选项3","选项4"],
+            "questionIsMandatory": false
         },
     textarea: {
-            "type": "textarea",
-            "topic": "文本题",
-            "isMandatory": false
+            "questionType": 3,
+            "questionTitle": "文本题",
+            "questionIsMandatory": false
         },
 	rating: {
-		"type": "rating",
-		"topic": "打分题（默认1-5分取整数）",
-		"isMandatory": false
-	}
+			"questionType": 4,
+			"questionTitle": "打分题（默认1-5分取整数）",
+			"questionIsMandatory": false
+		}
 };
 
 var quesTemps = {
 	normal: [
 		{
-			"type": "radio",
-			"topic": "单选题",
-			"options": ["选项1","选项2","选项3","选项4"]
+			"questionType": 1,
+			"questionTitle": "单选题",
+			"questionOption": ["选项1","选项2","选项3","选项4"],
+			"questionIsMandatory": false
 		},
 		{
-			"type": "checkbox",
-			"topic": "多选题",
-			"options": ["选项1","选项2","选项3","选项4"]
+			"questionType": 2,
+			"questionTitle": "多选题",
+			"questionOption": ["选项1","选项2","选项3","选项4"],
+			"questionIsMandatory": false
 		},
 		{
-			"type": "textarea",
-			"topic": "文本题",
-			"isMandatory": false
+			"questionType": 3,
+			"questionTitle": "文本题",
+			"questionIsMandatory": false
 		}
 	],
 	voting: [
 		{
-			"type": "radio",
-			"topic": "单选投票",
-			"options": ["选项1","选项2","选项3","选项4"],
-			"isMandatory": false
+			"questionType": 1,
+			"questionTitle": "单选投票",
+			"questionOption": ["选项1","选项2","选项3","选项4"],
+			"questionIsMandatory": false
 		},{
-			"type": "checkbox",
-			"topic": "多选投票",
-			"options": ["选项1","选项2","选项3","选项4"],
-			"isMandatory": false
+			"questionType": 2,
+			"questionTitle": "多选投票",
+			"questionOption": ["选项1","选项2","选项3","选项4"],
+			"questionIsMandatory": false
 		}
 	],
 	signup: [
 		{
-			"type": "textarea",
-			"topic": "姓名",
-			"isMandatory": false
+			"questionType": 3,
+			"questionTitle": "姓名",
+			"questionIsMandatory": false
 		},{
-			"type": "textarea",
-			"topic": "学号",
-			"isMandatory": false
+			"questionType": 3,
+			"questionTitle": "学号",
+			"questionIsMandatory": false
 		},{
-			"type": "textarea",
-			"topic": "手机号",
-			"isMandatory": false
+			"questionType": 3,
+			"questionTitle": "手机号",
+			"questionIsMandatory": false
 		},{
-			"type": "radio",
-			"topic": "报名项目（单选）",
-			"options": ["选项1","选项2","选项3","选项4"],
-			"isMandatory": false
+			"questionType": 1,
+			"questionTitle": "报名项目（单选）",
+			"questionOption": ["选项1","选项2","选项3","选项4"],
+			"questionIsMandatory": false
 		},{
-			"type": "checkbox",
-			"topic": "报名项目（多选）",
-			"options": ["选项1","选项2","选项3","选项4"],
-			"isMandatory": false
+			"questionType": 2,
+			"questionTitle": "报名项目（多选）",
+			"questionOption": ["选项1","选项2","选项3","选项4"],
+			"questionIsMandatory": false
 		},{
-			"type": "textarea",
-			"topic": "其他信息",
-			"isMandatory": false
+			"questionType": 3,
+			"questionTitle": "其他信息",
+			"questionIsMandatory": false
 		}
 	]
 };
 
 
+var test = {
+	'id': 1,
+	'title': 'title1',
+	'paperType': 1,
+	'status': 0,
+	'endTime': '2024-06-01',
+	"questionList": [
+		{
+			"questionType": 1,
+			"questionTitle": "单选题",
+			"questionOption": ["选项1","选项2","选项3","选项4"], //这个别是单一的一个String，我收到了会不好拆解
+			"questionIsMandatory": false
+		},
+		{
+			"questionType": 2,
+			"questionTitle": "多选题",
+			"questionOption": ["选项1","选项2","选项3","选项4"],
+			"questionIsMandatory": false
+		},
+		{
+			"questionType": 3,
+			"questionTitle": "文本题",
+			"questionIsMandatory": false
+		},
+		{
+			"questionType": 4,
+			"questionTitle": "打分题（默认1-5分取整数）",
+			"questionIsMandatory": false
+		}
+	]
+}
+
+
 export default {
 	quesTemps,
 	template,
-	date
+	date,
+	test
 }

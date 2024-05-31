@@ -29,6 +29,7 @@ export default defineComponent({
         }).then(response => {
           if (response.data === 'success'){
             globalUsername=username.value;
+            localStorage.setItem('username', globalUsername);
             console.log(response.data);
             router.push('/about');
           }
@@ -74,7 +75,7 @@ export default defineComponent({
         <input type="password" placeholder="Password" v-model="password">
       </div>
       <div class="forgot-pwd">
-        <span>Forgot Password?</span>
+        <router-link to="/resetPassword"><span>Forgot Password?</span></router-link>
       </div>
       <!-- <button class="btn">Login</button> -->
       <button class="btn" @click="submitLogin">Login</button>

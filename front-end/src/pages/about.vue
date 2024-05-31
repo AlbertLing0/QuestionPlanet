@@ -25,7 +25,7 @@ export default {
   name:"about",
   components: {sideBar, topBar},
   setup(){
-    const nowUserName=inject('Username');
+    const nowUserName = inject('Username') ;
     return {
       nowUserName
     }
@@ -38,7 +38,7 @@ export default {
     },
     toggleTheme() {
       this.setThemeDark(!this.themeDark);
-    }
+    },
   },
   data() {
     return {
@@ -48,6 +48,9 @@ export default {
   mounted() {
     if (localStorage.getItem("theme-color") === "dark") { // Only when `dark` got, toggling is needed.
       this.setThemeDark(true);
+    }
+    if(localStorage.getItem("username")){
+      this.nowUserName=localStorage.getItem("username");
     }
   }
 }

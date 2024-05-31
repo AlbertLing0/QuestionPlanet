@@ -1,24 +1,57 @@
+<template>
+  <div id="naviBar">
+    <nav-bar/>
+  </div>
+  <div class="resetPasswordBox">
+    <div class="title">
+      <div class="title-h1">
+        Reset Password
+      </div>
+      <div class="tips">
+        Reset your password by verifying your email
+      </div>
+    </div>
+    <div class="form">
+      <div class="input-wrapper">
+        <input type="email" placeholder="Email" v-model="Email">
+        <button class="send-code-btn" @click="sendVerificationCode">Send Code</button>
+      </div>
+      <div class="input-wrapper">
+        <input type="text" placeholder="Verification Code" v-model="EmailVerificationCode">
+      </div>
+      <div class="input-wrapper">
+        <input type="password" placeholder="New Password" v-model="Password">
+      </div>
+      <div class="input-wrapper">
+        <input type="password" placeholder="Confirm New Password" v-model="ConfirmPassword">
+      </div>
+      <button class="btn" @click="resetPassword">Reset Password</button>
+    </div>
+    <div class="login">
+      Remember your password? <span><router-link to="/login">Login</router-link></span>
+    </div>
+  </div>
+</template>
+
 <script>
-import {defineComponent} from "vue";
-import { useRouter } from 'vue-router';
-import PlanetBG from "~/components/planetBG.vue";
+import { defineComponent, inject } from "vue";
+import { useRouter } from "vue-router";
 import NavBar from "~/components/navigation-bar.vue";
-import axios from 'axios';
+import axios from "axios";
 
 export default defineComponent({
-  components: {NavBar,axios},
+  components: { NavBar,axios },
+  setup() {
+    const router = useRouter();
+    return { router };
+  },
   data() {
     return {
       Email: '',
-      UserName: '',
       Password: '',
       ConfirmPassword: '',
       EmailVerificationCode: ''
     };
-  },
-   setup() {
-    const router = useRouter(); // 在 setup 函数中初始化 router
-    return { router }; // 返回 router，使其可在模板和方法中使用
   },
   methods: {
     async sendVerificationCode() {
@@ -40,72 +73,37 @@ export default defineComponent({
         // 处理请求错误，例如网络错误，弹出一个错误提示框
       }
     },
-    async register() {
+    async resetPassword() {
       const params = new URLSearchParams();
       params.append('email', this.Email);
-      params.append('username', this.UserName);
       params.append('password', this.Password);
       params.append('code', this.EmailVerificationCode);
+      // if (this.password != this.ConfirmPassword) {
+      //   // 提示用户两次输入密码不一致
+      //   alert('密码不一致');
+      //   console.log("password is:",this.Password);
+      //   console.log("confirmPassword is:",this.ConfirmPassword);
+      //   return;
+      // }
+
       try {
-        const response = await axios.post('http://localhost:1234/api/register', params);
-
-        // 处理成功响应，例如：
-        if (response.data === 'success') {
-          alert('注册成功');
-          console.log('注册成功');
-          this.router.push('/');
+        const response = await axios.post("http://localhost:1234/api/reset/password",params);
+        if (response.data === "success") {
+          console.log("Password reset successfully");
+          // 提示用户密码重置成功
+          this.router.push("/login");
         } else {
-          alert('注册失败');
-          console.error('注册失败', response);
-
+          console.error("Failed to reset password:", response.data);
+          // 提示用户密码重置失败
         }
       } catch (error) {
-        console.error('注册时出现错误', error);
-
+        console.error("Error resetting password:", error);
+        // 提示用户重置密码出错
       }
-    }
-  }
-})
+    },
+  },
+});
 </script>
-
-<template>
-  <div id="naviBar">
-    <nav-bar/>
-  </div>
-  <div class="resetPasswordBox">
-    <div class="title">
-      <div class="title-h1">
-        Register
-      </div>
-      <div class="tips">
-        Join QuestionPlanet and start your journey!
-      </div>
-    </div>
-    <div class="form">
-      <div class="input-wrapper">
-        <input type="text" placeholder="UserName" v-model="UserName">
-      </div>
-      <div class="input-wrapper">
-        <input type="password" placeholder="Password" v-model="Password">
-      </div>
-      <div class="input-wrapper">
-        <input type="password" placeholder="Confirm Password" v-model="ConfirmPassword">
-      </div>
-      <div class="input-wrapper">
-        <input type="email" placeholder="Email" v-model="Email">
-        <button class="send-code-btn" @click="sendVerificationCode">Send Code</button>
-      </div>
-      <div class="input-wrapper">
-        <input type="text" placeholder="Email Verification Code" v-model="EmailVerificationCode">
-      </div>
-      <button class="btn" @click ="register">Register</button>
-    </div>
-    <div class="login">
-      Already have an account? <span><router-link to="/login">Login</router-link></span>
-    </div>
-  </div>
-</template>
-
 
 <style scoped>
 #naviBar {

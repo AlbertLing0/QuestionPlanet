@@ -7,13 +7,13 @@
       <div class="person-info">
         <img src="../assets/head_portrait.jpg" alt="" />
         <div class="person-name">
-          <div class="name">MAOS</div>
+          <div class="name">{{nowUserName}}</div>
           <span class="detail">前端小白</span>
         </div>
       </div>
       <div class="menu-content">
         <div class="menu-list">
-          <div class="menu-list-item" v-for="item in menuData" :key="item.id">
+          <div class="menu-list-item" v-for="item in menuData" :key="item.id" @click="item.action">
             <div class="block"></div>
             <span class="iconfont" :class="item.iconFont"></span>
             <div class="item-name">{{ item.menuName }}</div>
@@ -34,31 +34,62 @@
 </template>
 
 <script>
+import {inject} from "vue";
+import router from "~/router/index.js";
+
 export default {
   name:"side-bar",
+  setup(){
+    let nowUserName = inject('Username') ;
+    return {
+      nowUserName
+    }
+
+  },
+
   data() {
     return {
       menuData: [
-        { id: 1, menuName: "Profile", iconFont: "icon-caidan" },
-        // { id: 2, menuName: "Products", iconFont: "icon-gouwu" },
-        // { id: 3, menuName: "Categories", iconFont: "icon-category" },
-        { id: 2, menuName: "My Questionnaires", iconFont: "icon-order-fill" },
-        // { id: 5, menuName: "Mine", iconFont: "icon-denglu-yonghuzu" },
-        // { id: 6, menuName: "Sales Offers", iconFont: "icon-liwu" },
-        { id: 7, menuName: "Data Analisys", iconFont: "icon-bingtu" },
-        // { id: 8, menuName: "Locations", iconFont: "icon-weizhi" },
-        { id: 9, menuName: "Setting", iconFont: "icon-shezhi" },
-        { id: 10, menuName: "Logout", iconFont: "icon-jinru" }
+        { id: 1, menuName: "Profile", iconFont: "icon-caidan", action: this.showProfile },
+        { id: 2, menuName: "My Questionnaires", iconFont: "icon-order-fill", action: this.showQuestionnaires },
+        { id: 3, menuName: "Data Analysis", iconFont: "icon-bingtu", action: this.showDataAnalysis },
+        { id: 4, menuName: "Settings", iconFont: "icon-shezhi", action: this.showSettings },
+        { id: 5, menuName: "Logout", iconFont: "icon-jinru", action: this.logout }
       ]
     };
   },
   mounted() {
-
+    if(localStorage.getItem("username")){
+      this.nowUserName=localStorage.getItem("username");
+    }
   },
   methods: {
     changeDark() {
       this.$emit("toggle-theme");
-    }
+    },
+    showProfile() {
+      console.log("Profile clicked");
+      // 实现显示 Profile 的逻辑
+    },
+    showQuestionnaires() {
+      console.log("My Questionnaires clicked");
+      // 实现显示 Questionnaires 的逻辑
+    },
+    showDataAnalysis() {
+      console.log("Data Analysis clicked");
+      // 实现显示 Data Analysis 的逻辑
+    },
+    showSettings() {
+      console.log("Settings clicked");
+      // 实现显示 Settings 的逻辑
+    },
+    logout() {
+      console.log("Logout clicked");
+      // 实现 Logout 的逻辑
+      this.nowUserName=null;
+      router.push("/");
+    },
+
   }
 };
 </script>

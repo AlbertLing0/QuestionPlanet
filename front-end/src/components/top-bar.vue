@@ -1,7 +1,7 @@
 <template>
   <body>
   <div class="top-bar-logo">
-    <img :src="logoSrc" alt="" class="logo">
+    <router-link to="/"><img :src="logoSrc" alt="" class="logo"></router-link>
   </div>
   </body>
 </template>

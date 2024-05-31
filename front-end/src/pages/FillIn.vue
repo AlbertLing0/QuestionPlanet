@@ -181,7 +181,7 @@
                     questionnaireTitle: "Title",
                     questionnaireId: this.$route.params.id,
                 },
-                
+
                 submitVisible: false,
                 resetVisible: false,
                 // ip: null,
@@ -212,7 +212,7 @@
                     const resList = [];
                     const ansList = [];
                     for (const t of tempList) {
-                        t['date'] = new Date(t['date']);
+                        // t['date'] = new Date(t['date']);
                         resList.push(t);
                         const oneAnswer = {
                             questionId: t['questionId'],
@@ -223,9 +223,9 @@
                             answerSingleCheck: '',
                             answerMultiCheck: [],
                             answerText: '',
-                            answerNumber: t['defaultNumber'],
+                            // answerNumber: t['defaultNumber'],
                             answerGrade: 0,
-                            answerDate: t['date'],
+                            // answerDate: t['date'],
                         };
                         ansList.push(oneAnswer);
                     }
