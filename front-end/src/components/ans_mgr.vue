@@ -1,5 +1,5 @@
 <template>
-	<div id="que_mgr_root">
+	<div id="ans_mgr_root">
 		ANS_MGR
 	</div>
 </template>
@@ -9,9 +9,11 @@
 </script>
 
 <style>
-	#que_mgr_root {
-		width: 100%;
+	#ans_mgr_root {
+		width: 50%;
 		height: 100%;
-		background-color: rgb(0, 255, 255);
+		flex-shrink: 0;
+		background-color: #9fdfdfc0;
+		border-radius: 16px;
 	}
 </style>

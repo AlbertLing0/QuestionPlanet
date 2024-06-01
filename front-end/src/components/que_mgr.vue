@@ -10,8 +10,10 @@
 
 <style>
 	#que_mgr_root {
-		width: 100%;
+		width: 50%;
 		height: 100%;
-		background-color: rgb(222, 184, 135);
+		flex-shrink: 0;
+		background-color: #dfdf9fc0;
+		border-radius: 16px;
 	}
 </style>

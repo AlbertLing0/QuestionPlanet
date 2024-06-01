@@ -9,11 +9,17 @@
       </div>
       <div class="right-box">
         <div class="head-text">
-          歡迎回来，{{nowUserName}}。
+          歡迎回来，{{ nowUserName || "<無名氏>" }}。
         </div>
-        <div class="mgr_box_container">
-          <que_mgr/>
-          <ans_mgr/>
+        <div :class="['mgr_box_toggler_bar', on_ans_mgr && 'mgr_box_toggler_bar_of_ans']">
+          <div class="mgr_box_toggler_pad"></div>
+          <div class="mgr_box_toggler" @click="toggle_mgr_box">{{ on_ans_mgr ? "<<< Questionnaires" : "Answers >>>" }}</div>
+        </div>
+        <div class="mgr_box_view">
+          <div :class="['mgr_box_container', on_ans_mgr && 'ans_mgr_in_container']">
+            <que_mgr/>
+            <ans_mgr/>
+          </div>
         </div>
       </div>
 
@@ -45,12 +51,14 @@ export default {
     toggleTheme() {
       this.setThemeDark(!this.themeDark);
     },
+    toggle_mgr_box() {
+      if (this.on_ans_mgr = !this.on_ans_mgr) {}
+    }
   },
   data() {
     return {
       themeDark: false,
-      mgr_boxes: ["que_mgr", "ans_mgr"],
-      mgr_ndx: 0
+      on_ans_mgr: false
     };
   },
   mounted() {
@@ -67,18 +75,16 @@ export default {
 <style lang="scss" scoped>
 @import url("~/assets/style/theme_colors.css");
 
-.component_root {
-  background-color: var(--bg-color);
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
 @font-face {
-  font-family: Marmelad_Regular, "yu mincho";
+  font-family: Marmelad_Regular;
   font-weight: normal;
   src: url(~/assets/font/Marmelad-Regular.ttf) format("truetype");
   text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: yumin;
+  src: url("~/assets/font/yumin.ttf") format(truetype);
 }
 
 body {
@@ -88,6 +94,14 @@ body {
 
 
 }
+.component_root {
+  background-color: var(--bg-color);
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: "yumin";
+}
+
 .bottom-box{
   display: flex;
   flex-direction: row;
@@ -111,15 +125,57 @@ body {
     background-color: var(--theme-text-box-color);
     border-radius: 20px;
     padding: 3% 5%;
+    display: flex;
+    flex-direction: column;
     .head-text{
+      height: min-content;
       font-size: 30px;
-      font-family: SansSerif;
+      /* font-family: SansSerif; */
       color: var(--theme-info-text-color);
       align-items: flex-end;
     }
-    .mgr_box_container {
+    .mgr_box_toggler_bar {
       display: flex;
       flex-direction: row;
+      .mgr_box_toggler_pad {
+        width: 100%;
+        transition: width 0.125s ease-in;
+      }
+      .mgr_box_toggler {
+        margin: 4px;
+        padding: 4px;
+        flex-shrink: 0;
+        background-color: #dfdf9f;
+        border: 2px solid #685840;
+        border-radius: 16px;
+        cursor: pointer;
+      }
+    }
+    .mgr_box_toggler_bar_of_ans {
+      .mgr_box_toggler_pad {
+        width: 0;
+      }
+      .mgr_box_toggler {
+        background-color: #9fdfdf;
+        border-color: #405858;
+      }
+    }
+    .mgr_box_view {
+      width: 100%;
+      flex-grow: 1;
+      overflow: hidden;
+    }
+    .mgr_box_container {
+      position: relative;
+      left: 0%;
+      width: 200%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      transition: left 0.125s ease-in;
+    }
+    .ans_mgr_in_container {
+      left: -100%;
     }
 
   }
