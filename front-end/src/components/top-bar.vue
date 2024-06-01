@@ -1,9 +1,7 @@
 <template>
-  <body>
   <div class="top-bar-logo">
     <router-link to="/"><img :src="logoSrc" alt="" class="logo"></router-link>
   </div>
-  </body>
 </template>
 
 <script>
@@ -42,6 +40,6 @@ export default {
       opacity: 0.8;
     }
   }
-  //background-color: var(--pane-color);
+  /*background-color: var(--pane-color);*/
 }
 </style>

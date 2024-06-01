@@ -12,6 +12,7 @@ import RegisterPage from '~/pages/register.vue'
 import design from '~/pages/Design.vue'
 import FillIn from '~/pages/FillIn.vue'
 import ResetPassword from '~/pages/resetPassword.vue'
+import quest_design from "~/pages/quest_design.vue";
 
 const routes = [{
     path:"/",
@@ -40,7 +41,7 @@ const routes = [{
     meta: { requiresParallax: false }
 },{
     path: "/design/:id",
-    component: design
+    component: quest_design
 },{
     path: "/FillIn/:id",
     component: FillIn

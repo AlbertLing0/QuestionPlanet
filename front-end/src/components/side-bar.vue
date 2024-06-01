@@ -13,7 +13,7 @@
       </div>
       <div class="menu-content">
         <div class="menu-list">
-          <div class="menu-list-item" v-for="item in menuData" :key="item.id" @click="item.action">
+          <div :class="['menu-list-item', is_item_selected(item) && 'selected']" v-for="item in menuData" :key="item.id">
             <div class="block"></div>
             <span class="iconfont" :class="item.iconFont"></span>
             <div class="item-name">{{ item.menuName }}</div>
@@ -39,6 +39,12 @@ import router from "~/router/index.js";
 
 export default {
   name:"side-bar",
+  props: {
+    selected_items: {
+      type: Array,
+      default: []
+    }
+  },
   setup(){
     let nowUserName = inject('Username') ;
     return {
@@ -46,7 +52,6 @@ export default {
     }
 
   },
-
   data() {
     return {
       menuData: [
@@ -64,6 +69,10 @@ export default {
     }
   },
   methods: {
+    /** @param {{ id: number; menuName: string; iconFont: string; }} item */
+    is_item_selected(item) {
+      return this.$props.selected_items.includes(item.id);
+    },
     changeDark() {
       this.$emit("toggle-theme");
     },
@@ -104,7 +113,7 @@ export default {
 }
 
 .menu-wrapper {
-  margin-left: 25px;
+  margin-left: -32px;
   width: 70px;
   border-radius: 20px;
   background-color: var(--pane-color);
@@ -211,7 +220,7 @@ export default {
     transition: 0.6s;
     opacity: 0;
   }
-  &:hover {
+  @mixin item_hover_styles {
     background-color: var(--theme-hover-menu-color);
     .item-name {
       color: var(--theme-hover-color);
@@ -222,6 +231,12 @@ export default {
     .block {
       opacity: 1;
     }
+  }
+  &:hover {
+    @include item_hover_styles;
+  }
+  &.selected {
+    @include item_hover_styles;
   }
   .btn {
     position: absolute;
@@ -250,7 +265,7 @@ export default {
       width: 15px;
       height: 15px;
       border-radius: 50%;
-      background: white;
+      background: var(--theme-hover-menu-color);
       position: absolute;
       left: 3px;
       top: 50%;
@@ -259,12 +274,12 @@ export default {
     }
     .check-ipt:checked + .check-lable::before {
       left: 20px;
-      background: rgb(32, 30, 43);
     }
   }
 }
 
 .menu-wrapper:hover {
+  margin-left: 32px;
   width: 220px;
   .menu-title .title-text {
     opacity: 1;
