@@ -4,6 +4,9 @@ import ElementPlus from 'element-plus'
 // import 'element-plus/dist/index.css'
 import router from './router'
 // import $ from 'jquery'
+import vuetyped from 'vue3typed'
+
+
 
 
 const app = createApp(App)
@@ -12,6 +15,7 @@ const app = createApp(App)
 app.provide('Username', ref(null));
 
 app.use(router)
+app.use(vuetyped)
 // app.config.globalProperties.$ = $;
 app.use(ElementPlus)
 app.mount('#app')

@@ -83,23 +83,27 @@ var template = {
             "questionType": 1,
             "questionTitle": "单选题",
             "questionOption": ["选项1","选项2","选项3","选项4"],
-            "questionIsMandatory": false
+            "questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
         },
     checkbox: {
             "questionType": 2,
             "questionTitle": "多选题",
             "questionOption": ["选项1","选项2","选项3","选项4"],
-            "questionIsMandatory": false
+            "questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
         },
     textarea: {
             "questionType": 3,
             "questionTitle": "文本题",
-            "questionIsMandatory": false
+            "questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
         },
 	rating: {
 			"questionType": 4,
 			"questionTitle": "打分题（默认1-5分取整数）",
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		}
 };
 
@@ -109,18 +113,21 @@ var quesTemps = {
 			"questionType": 1,
 			"questionTitle": "单选题",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},
 		{
 			"questionType": 2,
 			"questionTitle": "多选题",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},
 		{
 			"questionType": 3,
 			"questionTitle": "文本题",
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		}
 	],
 	voting: [
@@ -128,74 +135,89 @@ var quesTemps = {
 			"questionType": 1,
 			"questionTitle": "单选投票",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},{
 			"questionType": 2,
 			"questionTitle": "多选投票",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		}
 	],
 	signup: [
 		{
 			"questionType": 3,
 			"questionTitle": "姓名",
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},{
 			"questionType": 3,
 			"questionTitle": "学号",
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},{
 			"questionType": 3,
 			"questionTitle": "手机号",
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},{
 			"questionType": 1,
 			"questionTitle": "报名项目（单选）",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},{
 			"questionType": 2,
 			"questionTitle": "报名项目（多选）",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},{
 			"questionType": 3,
 			"questionTitle": "其他信息",
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		}
 	]
 };
 
 
 var test = {
-	'id': 1,
-	'title': 'title1',
-	'paperType': 1,
-	'status': 0,
-	'endTime': '2024-06-01',
+	"quePaper": {
+		"id": 1,
+		"title": "title1",
+		"description": "description1",
+		"paperType": 1,
+		"status": 0,
+		"endTime": "2024-06-01",
+	},
 	"questionList": [
 		{
 			"questionType": 1,
 			"questionTitle": "单选题",
 			"questionOption": ["选项1","选项2","选项3","选项4"], //这个别是单一的一个String，我收到了会不好拆解
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},
 		{
 			"questionType": 2,
 			"questionTitle": "多选题",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},
 		{
 			"questionType": 3,
 			"questionTitle": "文本题",
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		},
 		{
 			"questionType": 4,
 			"questionTitle": "打分题（默认1-5分取整数）",
-			"questionIsMandatory": false
+			"questionIsMandatory": false,
+			"questionDescription": "这是该题的描述"
 		}
 	]
 }

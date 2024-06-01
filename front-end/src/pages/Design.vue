@@ -14,23 +14,37 @@
 				@keyup.enter="doneTitleEdit()">
             </header>
 
+			<header2>
+				<p v-show="!descEditing" @click="descEditing = true">{{ description }}</p>
+				<input type="text"
+				v-focus
+				v-model="description"
+				:class="{inlineShow: descEditing}"
+				@focus="_description = description"
+				@keyup.esc="cancelDescEdit()"
+				@blur="doneDescEdit()"
+				@keyup.enter="doneDescEdit()">
+			</header2>
 
 			<div class="qu-content">
 				<section class="qu-item"
 				v-for="(item, index) in questions"
-				:class="{nowEditing: curIndex === index && topicEditing, optEditing: curIndex === index}">
+				:class="{nowEditing: curIndex === index && topicEditing, queEditing: curIndex2 === index && queDescEditing, optEditing: curIndex === index}">
+
 					<h3 @click="curIndex = index; curOptIndex=''; topicEditing = true">
 						<span class="qu-num">{{`Q${index + 1}`}}</span>
 						<span class="qu-topic">{{ item.questionTitle }}</span>
 						<input type="text"
 						v-focus
-						v-model="topic"
-						@focus="topic = item.questionTitle; _topic = topic"
-						@blur="doneTopicEdit(index); curIndex=''; topic=''"
-						@keyup.esc="cancelTopicEdit()"
-						@keyup.enter="doneTopicEdit(index); topic=''">
+						v-model="item.questionTitle"
+						:class="{inlineShow: topicEditing}"
+						@focus="_questionTitle = item.questionTitle"
+						@blur="doneTopicEdit(index); curIndex=''; curIndex2=''"
+						@keyup.esc="cancelTopicEdit(index)"
+						@keyup.enter="doneTopicEdit(index)">
 						<span v-if="item.questionIsMandatory"> *</span>
 					</h3>
+
 					<template v-if="item.questionType === 3">
 						<textarea rows="8" cols="80"></textarea>
 						<label id="require-check">
@@ -44,7 +58,7 @@
 					</template>
 
 					<ul v-else-if="item.questionType === 4">
-						<div style="font-size: 40px;" id="stars">☆☆☆☆☆</div>
+						<div style="margin: 0 0 1.5rem 0; font-size: 40px;" id="stars">☆☆☆☆☆</div>
 						<label>
 							<label id="require-check">
 								<input type="checkbox"
@@ -61,14 +75,15 @@
 						<li v-for="(option, optIndex) in item.questionOption"
 							:class="{optionEditing: curOptIndex === optIndex}">
 							<span class="optionText"
-								  @click="curIndex=index; curOptIndex=optIndex; topicEditing = false">{{ option }}</span>
+								  @click="curIndex=index; curIndex2=index; curOptIndex=optIndex; topicEditing = false; queDescEditing = false">{{ option }}</span>
 							<input type="text"
 							v-focus
-							v-model="optionText"
-							@focus="optionText = option; _optionText = optionText"
-							@blur="doneOptionEdit(index, optIndex); curIndex=''; optionText=''"
-							@keyup.esc="cancelOptionEdit()"
-							@keyup.enter="doneOptionEdit(index, optIndex); optionText=''">
+							v-model="this.questions[index].questionOption[optIndex]"
+							:class="{inlineShow: curOptIndex}"
+							@focus="_optionText = this.questions[index].questionOption[optIndex]"
+							@blur="doneOptionEdit(index, optIndex); curIndex=''; curIndex2=''"
+							@keyup.esc="cancelOptionEdit(index, optIndex)"
+							@keyup.enter="doneOptionEdit(index, optIndex)">
 
 							<ul class="opt-ctrl">
 								<li v-if="optIndex !== 0"
@@ -101,6 +116,19 @@
 						</label>
 					</ul>
 
+					<h3 style="margin: 0.8rem 0 0 0; color: grey;"
+					@click="curIndex2 = index; curOptIndex=''; queDescEditing = false">
+						<span class="qu-topic2">{{ item.questionDescription }}</span>
+						<input2 type="text"
+						v-focus
+						v-model="item.questionDescription"
+						:class="{inlineShow: queDescEditing}"
+						@focus="_questionDescription = item.questionDescription"
+						@blur="doneQueDescEdit(index); curIndex=''; curIndex2=''"
+						@keyup.esc="cancelQueDescEdit(index)"
+						@keyup.enter="doneQueDescEdit(index)"/>
+					</h3>
+					
 					<ul class="operat-list">
 						<li v-if="index !== 0"
 							@click="moveUp(index, questions)">上移</li>
@@ -109,7 +137,7 @@
 						<li @click="reuse(index)">复用</li>
 						<li @click="delQuestion(index)">删除</li>
 					</ul>
-					<div></div>
+
 				</section>
 
 				<div class="add-box">
@@ -171,6 +199,7 @@ import Datepicker from '../components/Datepicker.vue';
 import request from '../utils/request';
 // import { ref } from 'vue';
 // import { VueDraggable } from 'vue-draggable-plus';
+import axios from 'axios'
 
 export default {
 	name: 'design',
@@ -179,24 +208,30 @@ export default {
 	},
 	data() {
 		return {
-			index: 0,
+			id: 0,
 			questions: [],
 			questionTemplate:{},
 			quList: Store.fetch(),
 			date: '',
-			title: 'default title',
+			title: '',
 			_title: '',
-			topic: '',
-			_topic: '',
+			description: '',
+			_description: '',
+			questionTitle: '',
+			_questionTitle: '',
+			_questionDescription: '',
 			optionText: '',
 			_optionText: '',
 			curIndex: '',
+			curIndex2: '',
 			curOptIndex: '',
 			promptText: '',
 			iterator: {},
 			isAdding: false,
 			titleEditing: false,
+			descEditing: false,
 			topicEditing: false,
+			queDescEditing: false, 
 			isShowPrompt: false,
 			isShowDatepicker: false,
 			requestIn: {},
@@ -241,25 +276,43 @@ export default {
 	},
 
 	methods: {
-		getData() {
-			this.requestIn = Data.test; //替换为传入的json
-			this.id = this.requestIn.id;
-			this.title = this.requestIn.title;
-			if(this.requestIn.endTime === null || this.requestIn.endTime === ""){
-				this.date = "2024-06-02";
-			}else{
-				this.date = this.requestIn.endTime;
-			}
+		async getData() {
+			this.id = this.$route.params.id;
 
-			this.questions = this.requestIn.questionList;
+			this.requestOut = JSON.parse(JSON.stringify(Data.test));
+
+			await axios.get("http://localhost:1234/api/getQuePaper", {
+                    params: { quePaperId: this.id, }
+                }).then((res) => {
+                    const In = res.data;
+					this.title = In.quePaper.title;
+					this.description = In.quePaper.description;
+					if(In.quePaper.endTime === null || In.quePaper.endTime === ""){
+						this.date = "2024-06-02";
+					}else{
+						this.date = In.quePaper.endTime;
+					}
+					this.requestOut.paperType = In.quePaper.paperType;
+					this.requestOut.status = In.quePaper.status;
+					this.questions = [...JSON.parse(JSON.stringify(In.questionList))];
+					console.log(In);
+					if (res.data.quePaper.status > 0) {
+						// this.$message.error({message: "该问卷无法再进行编辑！", duration: 0, showClose: true});
+						this.$route.push({path: '/'});
+					}
+                    // this.$message({message: "问卷已读取", duration: 1000});
+                }).catch(() => {
+                    // this.$message({message: "error！问卷读取失败！", duration: 1000});
+                });
+
 			if(this.questions.length === 0){
-				let type = this.requestIn.paperType;
+				let type = this.requestOut.paperType;
 				if(type === 2){
-					this.questions = Data.quesTemps['voting'];
+					this.questions = [...JSON.parse(JSON.stringify(Data.quesTemps['voting']))];
 				}else if(type === 3){
-					this.questions = Data.quesTemps['signup'];
+					this.questions = [...JSON.parse(JSON.stringify(Data.quesTemps['signup']))];
 				}else{
-					this.questions = Data.quesTemps['normal'];
+					this.questions = [...JSON.parse(JSON.stringify(Data.quesTemps['normal']))];
 				}
 			}
 
@@ -268,7 +321,11 @@ export default {
 				this.title = "请在此输入标题";
 			}
 
-			this.requestOut = JSON.parse(JSON.stringify(this.requestIn));
+			this.requestOut.id = this.id;
+			this.requestOut.paperType = this.requestIn.paperType;
+			this.requestOut.status = this.requestIn.status;
+
+			console.log(this.requestOut);
 		},
 
 		changeDate(date) {
@@ -294,35 +351,58 @@ export default {
             this.titleEditing = false;
         },
 
-		cancelTopicEdit() {
-			this.topicEditing = false;
-			this.topic = this._topic;
+		cancelDescEdit() {
+			this.descEditing = false;
+			this.description = this._descEditing;
 		},
 
-		cancelOptionEdit() {
+        doneDescEdit() {
+            if(this.description === ''){
+                this.description = this._description;
+            }
+            this.descEditing = false;
+        },
+
+		cancelTopicEdit(index) {
+			this.questions[index].questionTitle = this._questionTitle;
+			this.topicEditing = false;
+		},
+
+		cancelQueDescEdit(index) {
+			this.questions[index].questionDescription = this._questionDescription;
+			this.queDescEditing = false;
+		},
+
+		cancelOptionEdit(index, optIndex) {
 			this.curOptIndex = '';
-			this.optionText = this._optionText;
+			this.questions[index].questionOption[optIndex] = this._optionText;
 		},
 
 		doneTopicEdit(index) {
-			this.topicEditing = false;
-			if(this.topic === ''){
-				this.topic = this._topic;
+			if(this.questions[index].questionTitle === ''){
+				this.questions[index].questionTitle = this._questionTitle;
 			}
-			this.questions[index].questionTitle = this.topic;
+			this.topicEditing = false;
+		},
+
+		doneQueDescEdit(index) {
+			if(this.questions[index].questionDescription === ''){
+				this.questions[index].questionDescription = this._questionDescription;
+			}
+			this.queDescEditing = false;
 		},
 
 		doneOptionEdit(index, optIndex) {
-			this.curOptIndex = '';
-			if(this.optionText === ''){
-				this.optionText = this._optionText;
+			if(this.questions[index].questionOption[optIndex] === ''){
+				this.questions[index].questionOption[optIndex] = this._optionText;
 			}
-			this.questions[index].options[optIndex] = this.optionText;
+			this.curOptIndex = '';
 		},
 
 		switchItem(index, array) {
 			this.optIndex = '';
 			this.curIndex = '';
+			this.curIndex2 = '';
 
 			let arr = array.splice(index, 2);
 			array.splice(index , 0, ...arr.reverse());
@@ -391,17 +471,23 @@ export default {
 		},
 
 		saveData() {
-			// if (this.questions.length < 1) {
-			// 	this.errorPrompt(`每份问卷至少一个问题！`);
-			// 	return;
-			// }
+			if (this.questions.length < 1) {
+				this.errorPrompt(`每份问卷至少一个问题！`);
+				return;
+			}
 
-			// this.requestOut.title = this.title;
-			// this.requestOut.endTime = this.date.toString();
-			// this.requestOut.questionList = [...this.questions];
+			this.requestOut.quePaper.title = this.title;
+			this.requestOut.quePaper.description = this.description;
+			this.requestOut.quePaper.endTime = this.date.toString();
+			this.requestOut.questionList = [...this.questions];
 
 			// 传回 this.requestOut
-
+			axios.post("http://localhost:1234/api/saveQuePaper", this.requestOut)
+				.then(() => {
+                    this.$message({message: "问卷已编辑", duration: 1000});
+                }).catch(() => {
+                    this.$message({message: "error！保存编辑失败！", duration: 1000})
+                });
 		},
 
 		*backBtn() {
@@ -416,7 +502,7 @@ export default {
 		},
 
 		*releaseBtn() {
-			yield this.showPrompt(`确认保存并发布问卷？问卷链接将为xxx`);
+			yield this.showPrompt(`确认保存并发布问卷？问卷链接将为http://localhost:5173/#/FillIn/`+this.id);
 			this.requestOut.state = 1;
 			this.saveData();
 			yield this.$router.push({path: '/'});
@@ -457,7 +543,7 @@ export default {
 .qu-wrap > header {
 	position: relative;
 	height: 5rem;
-	margin: 0  2rem 2rem 2rem;
+	margin: 0  2rem 0.5rem 2rem;
 	line-height: 5rem;
 	text-align: center;
 
@@ -469,7 +555,7 @@ export default {
 	}
 
 	span:hover {
-		color: orange;
+		color: #ffdaa9;
 	}
 
 	p, input {
@@ -480,7 +566,54 @@ export default {
 	}
 
 	p:hover {
-		background-color: orange;
+		background-color: #ffdaa9;
+	}
+
+	input {
+		display: none;
+		height: 100%;
+		text-align: center;
+		border: none;
+		outline: none;
+		background-color: #ccc;
+
+		&.inlineShow {
+			display: inline-block;
+		}
+
+	}
+
+}
+
+.qu-wrap > header2 {
+	position: relative;
+	height: 3rem;
+	margin: 0  0rem 1rem 0rem;
+	line-height: 3rem;
+	text-align: center;
+	display: flex;
+
+	span {
+		position: absolute;
+		top: 0;
+		left: 0;
+		cursor: pointer;
+	}
+
+	span:hover {
+		color: #ffdaa9;
+	}
+
+	p, input {
+		width: 50rem;
+		margin: 0 auto;
+		font-size: 1.4rem;
+		font-weight: 700;
+		color: grey;
+	}
+
+	p:hover {
+		background-color: #ffdaa9;
 	}
 
 	input {
@@ -549,6 +682,17 @@ export default {
 				background-color: #ccc;
 			}
 
+			& > input2 {
+				display: none;
+				width: 15rem;
+				height: 2rem;
+				font-size: 1rem;
+				border: none;
+				outline: none;
+				background-color: #ccc;
+				color: grey;
+			}
+
 		}
 
 		div:last-of-type {
@@ -570,6 +714,16 @@ export default {
 				display: inline-block;
 			}
 
+		}
+
+		&.queEditing {
+			.qu-topic2 {
+				display: none;
+			}
+
+			h3 > input2 {
+				display: inline-block;
+			}
 		}
 
 		&.optEditing .optionEditing {
