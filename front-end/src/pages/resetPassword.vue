@@ -38,6 +38,7 @@ import { defineComponent, inject } from "vue";
 import { useRouter } from "vue-router";
 import NavBar from "~/components/navigation-bar.vue";
 import axios from "axios";
+import {EMAIL_API, RESET_PASSWORD_API} from "~/utils/request.js";
 
 export default defineComponent({
   components: { NavBar,axios },
@@ -58,7 +59,7 @@ export default defineComponent({
       const params = new URLSearchParams();
       params.append('email', this.Email);
       try {
-        const response = await axios.post('http://localhost:1234/api/sendemail', params);
+        const response = await axios.post(EMAIL_API, params);
 
         // 处理成功响应，例如：
         if (response.data === 0) {
@@ -87,7 +88,7 @@ export default defineComponent({
       // }
 
       try {
-        const response = await axios.post("http://localhost:1234/api/reset/password",params);
+        const response = await axios.post(RESET_PASSWORD_API,params);
         if (response.data === "success") {
           console.log("Password reset successfully");
           // 提示用户密码重置成功

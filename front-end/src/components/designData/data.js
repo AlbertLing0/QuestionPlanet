@@ -132,16 +132,10 @@ var quesTemps = {
 	],
 	voting: [
 		{
-			"questionType": 1,
-			"questionTitle": "单选投票",
-			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false,
-			"questionDescription": "这是该题的描述"
-		},{
 			"questionType": 2,
 			"questionTitle": "多选投票",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
-			"questionIsMandatory": false,
+			"questionIsMandatory": true,
 			"questionDescription": "这是该题的描述"
 		}
 	],
@@ -149,35 +143,43 @@ var quesTemps = {
 		{
 			"questionType": 3,
 			"questionTitle": "姓名",
-			"questionIsMandatory": false,
+			"questionIsMandatory": true,
 			"questionDescription": "这是该题的描述"
 		},{
 			"questionType": 3,
 			"questionTitle": "学号",
-			"questionIsMandatory": false,
+			"questionIsMandatory": true,
 			"questionDescription": "这是该题的描述"
 		},{
 			"questionType": 3,
-			"questionTitle": "手机号",
-			"questionIsMandatory": false,
+			"questionTitle": "联系方式",
+			"questionIsMandatory": true,
 			"questionDescription": "这是该题的描述"
-		},{
+		}
+	],
+	exam: [
+		{
 			"questionType": 1,
-			"questionTitle": "报名项目（单选）",
+			"questionTitle": "单选题",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
 			"questionIsMandatory": false,
-			"questionDescription": "这是该题的描述"
-		},{
+			"questionDescription": "这是该题的描述",
+			"questionPoint": 5
+		},
+		{
 			"questionType": 2,
-			"questionTitle": "报名项目（多选）",
+			"questionTitle": "多选题",
 			"questionOption": ["选项1","选项2","选项3","选项4"],
 			"questionIsMandatory": false,
-			"questionDescription": "这是该题的描述"
-		},{
+			"questionDescription": "这是该题的描述",
+			"questionPoint": 5
+		},
+		{
 			"questionType": 3,
-			"questionTitle": "其他信息",
+			"questionTitle": "文本题",
 			"questionIsMandatory": false,
-			"questionDescription": "这是该题的描述"
+			"questionDescription": "这是该题的描述",
+			"questionPoint": 5
 		}
 	]
 };
@@ -196,7 +198,7 @@ var test = {
 		{
 			"questionType": 1,
 			"questionTitle": "单选题",
-			"questionOption": ["选项1","选项2","选项3","选项4"], //这个别是单一的一个String，我收到了会不好拆解
+			"questionOption": ["选项1","选项2","选项3","选项4"],
 			"questionIsMandatory": false,
 			"questionDescription": "这是该题的描述"
 		},

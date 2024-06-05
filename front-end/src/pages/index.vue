@@ -52,11 +52,14 @@ export default {
 .vuetype-container {
   height: 100vh; /* 视口高度 */
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
+  //align-items: center;
+  //justify-content: center;
+  //flex: 1;
 }
 .vuetype{
+  margin-top:-30vh;
+  margin-left: auto;
+  margin-right: auto;
   font-size: 60px; /* 根据需要调整字体大小 */
   font-family: DancingScript_Regular;
   color: ghostwhite; /* 根据需要调整字体颜色 */

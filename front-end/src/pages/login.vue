@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import PlanetBG from '~/components/planetBG.vue';
 import NavBar from "~/components/navigation-bar.vue";
 import axios from 'axios';
+import {LOGIN_API} from "~/utils/request.js";
 
 export default defineComponent({
   components: {
@@ -21,7 +22,7 @@ export default defineComponent({
     // 登录提交方法
     const submitLogin = async () => {
       try {
-        axios.get('http://localhost:1234/api/login', {
+        axios.get(LOGIN_API, {
           params: {
             username: username.value,
             password: password.value

@@ -1,13 +1,15 @@
 <template>
-  <div class="menu-wrapper">
-<!--    <div class="menu-title">-->
-<!--      <img :src="logoSrc" alt="" class="logo">-->
-<!--    </div>-->
+  <div
+      class="menu-wrapper"
+      :class="{ expanded: isExpanded }"
+      @mouseenter="expandSideBar"
+      @mouseleave="collapseSideBar"
+  >
     <div class="content">
       <div class="person-info">
-        <img src="../assets/head_portrait.jpg" alt="" />
+        <img :src="avatarUrl" alt="" />
         <div class="person-name">
-          <div class="name">{{nowUserName}}</div>
+          <div class="name">{{ nowUserName }}</div>
           <span class="detail">前端小白</span>
         </div>
       </div>
@@ -23,7 +25,7 @@
             <span class="iconfont icon-yueliang"></span>
             <div class="item-name">Dark Mode</div>
             <div class="btn">
-              <input class="check-ipt" type="checkbox" id="checks" @change="changeDark" />
+              <input class="check-ipt" type="checkbox" id="checks" @change="changeDark" :checked="isDarkMode"/>
               <label class="check-lable" for="checks"></label>
             </div>
           </div>
@@ -34,17 +36,59 @@
 </template>
 
 <script>
-import {inject} from "vue";
-import router from "~/router/index.js";
+import {inject, onMounted, ref} from 'vue';
+import router from '~/router/index.js';
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
+import {GET_AVATAR} from "~/utils/request.js";
 
 export default {
-  name:"side-bar",
-  setup(){
-    let nowUserName = inject('Username') ;
-    return {
-      nowUserName
-    }
+  name: "side-bar",
+  setup() {
+    const { isExpanded, expandSideBar, collapseSideBar } = inject('sideBarState');
+    let nowUserName = inject('Username');
+    const avatarUrl = ref('');
+    const getAvatar = async (username) => {
+      try {
+        const response = await axios.get(GET_AVATAR, {
+          params: {
+            username: username
+          }
+        });
 
+        if (response.data !== 'No avatar saved') {
+          console.log(response.data);
+          return response.data;
+        } else {
+          console.log(response.data);
+          ElMessage.warning('No avatar saved for this user');
+          return null;
+        }
+      } catch (error) {
+        ElMessage.error('Failed to fetch avatar');
+        console.error('Error fetching avatar:', error);
+        return null;
+      }
+    };
+    const fetchAvatar = async () => {
+      const url = await getAvatar(localStorage.getItem("username"));
+      if (url) {
+        avatarUrl.value = url;
+      }else{
+        avatarUrl.value="https://avatar-1327017285.cos.ap-beijing.myqcloud.com/avatar/head_portrait.jpg";
+      }
+      console.log(avatarUrl.value)
+    };
+    onMounted(() => {
+      fetchAvatar();
+    });
+    return {
+      nowUserName,
+      isExpanded,
+      expandSideBar,
+      collapseSideBar,
+      avatarUrl
+    };
   },
 
   data() {
@@ -55,53 +99,55 @@ export default {
         { id: 3, menuName: "Data Analysis", iconFont: "icon-bingtu", action: this.showDataAnalysis },
         { id: 4, menuName: "Settings", iconFont: "icon-shezhi", action: this.showSettings },
         { id: 5, menuName: "Logout", iconFont: "icon-jinru", action: this.logout }
-      ]
+      ],
+      isDarkMode: localStorage.getItem('isDarkMode') === 'true' // 添加这一行
     };
   },
+
   mounted() {
-    if(localStorage.getItem("username")){
-      this.nowUserName=localStorage.getItem("username");
+    if (localStorage.getItem("username")) {
+      this.nowUserName = localStorage.getItem("username");
     }
+    const isDarkMode = localStorage.getItem('isDarkMode');
+    if (isDarkMode !== null) {
+      this.isDarkMode = isDarkMode === 'true';
+    }
+
   },
+
   methods: {
     changeDark() {
+      this.isDarkMode = event.target.checked;
+      localStorage.setItem('isDarkMode', this.isDarkMode);
       this.$emit("toggle-theme");
     },
     showProfile() {
       console.log("Profile clicked");
-      // 实现显示 Profile 的逻辑
+      router.push('/about');
     },
     showQuestionnaires() {
       console.log("My Questionnaires clicked");
-      // 实现显示 Questionnaires 的逻辑
+      router.push("/questionnaires");
     },
     showDataAnalysis() {
       console.log("Data Analysis clicked");
-      // 实现显示 Data Analysis 的逻辑
     },
     showSettings() {
       console.log("Settings clicked");
-      // 实现显示 Settings 的逻辑
+      router.push("/settings");
     },
     logout() {
       console.log("Logout clicked");
-      // 实现 Logout 的逻辑
-      this.nowUserName=null;
+      this.nowUserName = null;
+      localStorage.removeItem('username');
       router.push("/");
-    },
-
+    }
   }
 };
 </script>
 
 <style lang='scss' scoped>
 @import url(../assets/iconfont/iconfont.css);
-@font-face {
-  font-family: Marmelad_Regular;
-  font-weight: normal;
-  src: url(~/assets/font/Marmelad-Regular.ttf) format("truetype");
-  text-rendering: optimizeLegibility;
-}
 
 .menu-wrapper {
   margin-left: 25px;
@@ -110,32 +156,13 @@ export default {
   background-color: var(--pane-color);
   padding: 10px;
   box-sizing: border-box;
-  transition: 0.6s;
+  transition: width 0.6s;
   overflow: hidden;
-  //position: absolute;
   display: flex;
   flex-direction: column;
 }
-
-.menu-title {
-  padding-bottom: 0px;
-  box-sizing: border-box;
-  border-bottom: 1px solid rgb(229, 233, 236);
-  margin-bottom: 20px;
-  .title-text {
-    margin-left: 10px;
-    font-family: Marmelad_Regular;
-    font-size: 30px;
-    vertical-align: middle;
-    opacity: 0;
-    transition: 0.6s;
-    color: var(--theme-info-text-color);
-  }
-  .icon-24gf-bag {
-    font-size: 30px;
-    padding-left: 10px;
-    color: var(--theme-hover-color);
-  }
+.menu-wrapper.expanded {
+  width: 220px;
 }
 
 .content .person-info {
@@ -152,9 +179,8 @@ export default {
   .person-name {
     margin-left: 15px;
     vertical-align: middle;
+    transition: opacity 0.6s;
     opacity: 0;
-    transition: 0.6s;
-    overflow: hidden;
     color: var(--theme-info-text-color);
     display: inline-block;
     .name {
@@ -166,12 +192,17 @@ export default {
     }
   }
 }
-.menu-content{
+.menu-wrapper.expanded .content .person-info .person-name {
+  opacity: 1;
+}
+
+.menu-content {
   border-top: 1px solid var(--theme-text-color);
   margin-top: 10px;
 }
+
 .menu-content .menu-list .menu-list-item {
-  font-family: Marmelad_Regular,SansSerif;
+  font-family: Marmelad_Regular, SansSerif;
   font-weight: 700;
   cursor: pointer;
   width: 100%;
@@ -180,10 +211,7 @@ export default {
   border-radius: 10px;
   padding-left: 15px;
   white-space: nowrap;
-  //display: flex;
-  .iconfont{
-    //top:60%;
-    //transform: translateY(-50%);
+  .iconfont {
     font-size: 18px;
     color: var(--theme-item-color);
   }
@@ -200,17 +228,18 @@ export default {
     border-bottom-left-radius: 4px;
     opacity: 0;
   }
-  .item-name {
 
+  .item-name {
     line-height: 50px;
     display: inline-block;
     margin-left: 10px;
     font-size: 15px;
     color: var(--theme-text-color);
     font-weight: 100;
-    transition: 0.6s;
+    transition: opacity 0.6s;
     opacity: 0;
   }
+
   &:hover {
     background-color: var(--theme-hover-menu-color);
     .item-name {
@@ -223,6 +252,7 @@ export default {
       opacity: 1;
     }
   }
+
   .btn {
     position: absolute;
     top: 50%;
@@ -263,18 +293,8 @@ export default {
     }
   }
 }
-
-.menu-wrapper:hover {
-  width: 220px;
-  .menu-title .title-text {
-    opacity: 1;
-  }
-  .content .person-info .person-name {
-    opacity: 1;
-  }
-  .menu-content .menu-list .menu-list-item .item-name,
-  .menu-content .menu-list .menu-list-item .btn {
-    opacity: 1;
-  }
+.menu-wrapper.expanded .menu-content .menu-list .menu-list-item .item-name,
+.menu-wrapper.expanded .menu-content .menu-list .menu-list-item .btn {
+  opacity: 1;
 }
 </style>

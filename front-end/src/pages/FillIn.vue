@@ -1,5 +1,5 @@
-<template>
-  <div class="full-screen-container">
+<template v-if="answerList && answerList.length">
+  <div class="full-screen-container" v-if="!isLoading">
     <!-- 内容容器 -->
     <div class="content-wrapper">
       <!-- 现有的el-row和el-col布局 -->
@@ -10,9 +10,26 @@
         <div v-if="questionnaire.isBoxSelected===false">
           <h1>{{ questionnaire.questionnaireTitle }}</h1>
           <!-- <h3>{{ questionnaire.questionnaireDescription }}</h3> -->
-          <h3 v-if="!showFullDescription">{{ questionnaire.questionnaireDescription | truncate }}</h3>
+          <!-- <h3 v-if="!showFullDescription">{{ questionnaire.questionnaireDescription | truncate }}</h3>
           <h3 v-else>{{ questionnaire.questionnaireDescription }}</h3>
-          <el-button @click="toggleDescription" type="text">{{ showFullDescription ? '收起' : '显示全部' }}</el-button>
+          <el-button @click="toggleDescription" link>{{ showFullDescription ? '收起' : '显示全部' }}</el-button> -->
+          <!-- <h3 v-if="!showFullDescription">{{ truncate(questionnaire.questionnaireDescription, 50) }}</h3> -->
+          <h3 v-if="!showFullDescription">{{ truncate(questionnaire.questionnaireDescription, 50) }}</h3>
+          <h3 v-else>
+            <div v-for="(line, index) in descriptionLines" :key="index" class="description-line">
+              {{ line }}
+            </div>
+          </h3>
+
+          <el-button
+            v-if="questionnaire.questionnaireDescription.length > 50"
+            type="primary"
+            plain
+            @click="toggleDescription"
+            class="my-toggle-button"
+          >
+            {{ showFullDescription ? '收起' : '显示全部' }}
+          </el-button>
         </div>
       </el-card>
       <el-form :disabled="cannotSubmit">
@@ -31,13 +48,14 @@
                     </h3>
 
 
-					<template v-if="item.questionType === 3">
-                        <textarea rows="8" cols="80" placeholder="请输入内容"></textarea>
+					<template v-if="item.questionType === 3 && answerList && answerList.length" >
+                        <!-- <textarea rows="8" cols="80" placeholder="请输入内容" v-model="answerList[index].answerText"></textarea> -->
+                        <textarea  rows="8" v-model="answerList[index].answerText" placeholder="请输入内容" class="fixed-size-input"></textarea>
 					</template>
 
 
 
-                    <template v-else-if="item.questionType === 4">
+                    <template v-else-if="item.questionType === 4 && answerList && answerList.length">
                       <ul class="rating-stars">
                         <!-- v-for 循环生成星星 -->
                         <li 
@@ -54,29 +72,33 @@
                     </template>
 
 
-                    <template v-else >
+                    <template v-else-if="answerList && answerList.length" >
                         <ul class="options-list">
-                            <div v-if="item.questionType=== 1">
-                                <el-radio  class="q-opt1" v-for="(option, opindex) in item.questionOption" 
-                                :key="opindex" 
-                                :value="opindex"
-                                :label="option"
-                                v-model="answerList[index].ans" 
-                                style="margin-bottom: 5px; display: block;">
-                                    {{option}}
-                                </el-radio>
-                              </div>
 
+                              <div v-if="item.questionType=== 1">
+                              <el-radio-group class="q-opt1-group" v-model="answerList[index].answerSingleOption">   
+                                  <el-radio  class="q-opt1" v-for="(option, opindex) in item.questionOptions" 
+                                  :key="opindex" 
+                                  :value="option"
+                                  :label="opindex"                
+                                  >
+                                      {{option}}
+                                  </el-radio>
+                              </el-radio-group>
+
+                              </div>
+                
 
                             <div v-if="item.questionType === 2">
-                                <el-checkbox class="q-opt2"
-                                    v-for="(option, opindex) in item.questionOption"
-                                    :key="opindex"
-                                    :value="option"
-                                    style="margin-bottom: 5px; display: block;">
+                            <el-checkbox-group class="q-opt2-group" v-model="answerList[index].answerMultiOption"> 
+                                <el-checkbox class="q-opt2" v-for="(option, opindex) in item.questionOptions"
+                                :key="opindex" 
+                                :value="option"
+                                :label="opindex" >
                                     {{option}}
                                 </el-checkbox>
-                              </div>
+                            </el-checkbox-group>
+                            </div>
 
 
                         </ul>
@@ -90,8 +112,9 @@
         </el-form>
         <div class="qu-wrap">
         <div class="ctrl-part">
-            <span class="ctrl1" @click="iterator = saveBtn(); iterator.next()">提交</span>
-            <span class="ctrl2" @click="iterator = releaseBtn(); iterator.next()">暂存</span>
+            <span class="ctrl1" @click="iterator = submitBtn(); iterator.next()">提交</span>
+            <span class="ctrl2" @click="iterator = saveBtn(); iterator.next()">暂存</span>
+            <span class="ctrl3" @click="iterator = resetBtn(); iterator.next()">重置</span>
         </div>
     </div>
 
@@ -99,12 +122,12 @@
       <div class="prompt-box">
           <header>
               <span>提示</span>
-              <a href="javascript:;" @click="isShowPrompt = false  ">&times;</a>
+              <a v-if="canClickPrompt" href="javascript:;" @click="isShowPrompt = false  ">&times;</a>
           </header>
           <p>{{ promptText }}</p>
-          <footer>
-              <span @click="isShowPrompt = false; iterator && iterator.next()">确定</span>
-              <span @click="isShowPrompt = false">取消</span>
+          <footer v-if="canClickPrompt">
+              <span @click="isShowPrompt = false; iterator && iterator.next(); isConfirm = !isConfirm">确定</span>
+              <span @click="isShowPrompt = false; isCancel = !isCancel">取消</span>
           </footer>
       </div>
   </div>
@@ -117,54 +140,81 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import axios from 'axios';
+import { ref, inject } from 'vue';
+import axios ,{ isCancel } from 'axios';
+import {GET_QUES_LIST_API, GET_QUES_PAPER_OUTLINE_API, GET_SUBMIT_ANS_API,GET_SAVED_ANS_API} from "~/utils/request.js";
+
 
     export default {
         name: "FillIn",
 
-        // filters: {
-        //   truncate: function(value, length = 10, clamp = '...') {
-        //     length = length || 10;
-        //     if (value.length > length) {
-        //       return value.slice(0, length) + clamp;
-        //     } else {
-        //       return value;
-        //     }
-        //   }
-        // },
+        setup(){
+          const nowUserName = inject('Username') ;
+          return {
+            nowUserName
+          }
+        },
 
         data: function () {
             return {
                 questions:[ 
-                //   {
-                //     "questionType": 1,
-                //     "questionTitle": "单选题",
-                //     "questionOption": ["选项1","选项2","选项3","选项4"],
-                //     "isMandatory": false
-                // },{
-                //     "questionType": 2,
-                //     "questionTitle": "多选题",
-                //     "questionOption": ["选项1","选项2","选项3","选项4"],
-                //     "isMandatory": false
-                // },{
-                //     "questionType": 3,
-                //     "questionTitle": "文本题",
-                //     "isMandatory": true
-                // },
+                  {
+                    "questionType": 1,
+                    "questionTitle": "单选题",
+                    "questionOptions": ["选项1","选项2","选项3","选项4"],
+                    "isMandatory": false
+                },{
+                    "questionType": 2,
+                    "questionTitle": "多选题",
+                    "questionOptions": ["选项1","选项2","选项3","选项4"],
+                    "isMandatory": false
+                },{
+                    "questionType": 3,
+                    "questionTitle": "文本题",
+                    "isMandatory": true
+                },
                 {
                     "questionType": 4,
                     "questionTitle": "打分题(默认1-5分取整数)",
                     "isMandatory": false
                 }
               ],
-                answerList: [],
+
+
+                answerList: [
+                {
+                    "questionType": 1,
+                    "questionTitle": "单选题",
+                    "questionOptions": ["选项1","选项2","选项3","选项4"],
+                    "answerSingleOption": "选项1",
+                    "isMandatory": false
+                },{
+                    "questionType": 2,
+                    "questionTitle": "多选题",
+                    "answerMultiOption": [],
+                    "questionOptions": ["选项1","选项2","选项3","选项4"],
+                    "isMandatory": false
+                },{
+                    "questionType": 3,
+                    "questionTitle": "文本题",
+                    "answerText": "",
+                    "isMandatory": true
+                },
+                {
+                    "questionType": 4,
+                    "questionTitle": "打分题(默认1-5分取整数)",
+                    "answerCode": 0,
+                    "isMandatory": false
+                }
+                ],
 
                 questionnaire: {
                     isBoxSelected: false,
-                    questionnaireDescription: "Description",
+                    questionnaireDescription: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                     questionnaireTitle: "Title",
                     questionnaireId: this.$route.params.id,
+                    paperType: 1,
+
                 },
 
                 submitVisible: false,
@@ -172,8 +222,16 @@ import axios from 'axios';
                 // ip: null,
                 alreadySubmit: null,
                 cannotSubmit: null,
-                selectedAnswer: false,
+                selectedAnswer: null,
                 selectedAnswers:[],
+
+                isDataLoaded: false,
+                isQuePaperAnswered:  false,
+
+                isLoading: true,
+
+                isConfirm: false,
+                isCancel: false,
 
                 // selectedAnswer = ref(null),
                 // selectedAnswers = ref([]),
@@ -182,16 +240,10 @@ import axios from 'axios';
 
                 iterator: {},
                 isShowPrompt: false,
-                promptText: 'hh',
+                promptText: '',
+                canClickPrompt: false,
 
                 showFullDescription: false,
-            }
-        },
-        computed: {
-            aaa: function () {
-                return {
-                    answerList: this.answerList,
-                }
             }
         },
         methods: {
@@ -199,141 +251,212 @@ import axios from 'axios';
 
               console.log("qqq");
 
-              const formData = new FormData();
-              formData.append("questionnaireId", 1);
-
-              axios.get('http://localhost:1234/api/fillin/getQuestionList', {
+              const response = await axios.get(GET_QUES_LIST_API, {
                 params: {
-                  questionnaireId: this.$route.params.id,
+                  quePaperId: this.$route.params.id,
                 }
               }).then(response => {
-                  this.questions = response.data.questionList;
+                  // this.questions = response.data.questionList;
                   console.log(response.data);
                   const tempList = response.data['questionList'];
                   const resList = [];
                   const ansList = [];
                   for (const t of tempList) {
-                    // t['date'] = new Date(t['date']);
                     resList.push(t);
                     const oneAnswer = {
                         questionId: t['questionId'],
                         questionTitle: t['questionTitle'],
                         questionType: t['questionType'],
-                        // questionNullable: t['questionNullable'],
                         isMandatory: t['isMandatory'],
-                        answerSingleCheck: '',
-                        answerMultiCheck: [],
+                        answerSingleOption: null,
+                        answerMultiOption: [],
                         answerText: '',
-                        // answerNumber: t['defaultNumber'],
-                        answerGrade: 0,
-                        // answerDate: t['date'],
+                        answerCode: 0,
                     };
                     ansList.push(oneAnswer);
                   }
-                  this.questionList = resList;
+                  this.questions = resList;
                   this.answerList = ansList;
-                  // this.$message({message: "问卷已读取", duration: 1000});
                   console.log("问卷已读取");
                   console.log(this.answerList);
+
               });
             
               console.log("111");
 
-              axios.get("http://localhost:1234/api/getQuePaperOutline", {
-                  params: {
-                      quePaperId: this.$route.params.id
+            },
+
+            async fetchSavedData(){
+              console.log("q22");
+
+              const response = await axios.get(GET_SAVED_ANS_API, {
+                params: {
+                  quePaperId: this.$route.params.id,
+                  username: this.nowUserName
+                }
+              }).then(response => {
+                  this.answerList = response.data.answerList;
+                  // this.questions = response.data.questionList;
+                  console.log(response.data);
+
+                  for (let i = 0; i < this.questions.length; i++) {
+                    if( this.questions[i].questionType === 4)
+                    this.questions[i].rating = this.answerList[i].answerCode;
                   }
-              }).then(res => {
+                  // const tempList = response.data['questionList'];
+                  // const resList = [];
+                  // const ansList = [];
+                  // for (const t of tempList) {
+                  //   resList.push(t);
+                  //   const oneAnswer = {
+                  //       questionId: t['questionId'],
+                  //       questionTitle: t['questionTitle'],
+                  //       questionType: t['questionType'],
+                  //       isMandatory: t['isMandatory'],
+                  //       answerSingleOption: null,
+                  //       answerMultiOption: [],
+                  //       answerText: '',
+                  //       answerCode: 0,
+                  //   };
+                  //   ansList.push(oneAnswer);
+                  // }
+                  // this.questions = resList;
+                  // this.answerList = ansList;
+                  // console.log("问卷已读取");
+                  // console.log(this.answerList);
+
+              });
+            
+              console.log("122");
+            },
+
+            async getQuePaper(){
+              const res = await axios.get(GET_QUES_PAPER_OUTLINE_API, {
+                  params: {
+                      quePaperId: this.$route.params.id,
+                      username: this.nowUserName
+                  }
+              });  //.then(res => {
                   const temp = {
                       isBoxSelected: false,
-                      // questionnaireDescription: res.data['quePaper']['description'],
+                      questionnaireDescription: res.data['quePaper']['description'],
                       questionnaireTitle: res.data['quePaper']['title'],
                       questionnaireId: res.data['quePaper']['id'],
-                      // paperType: res.data[]
+                      paperType: res.data['quePaper']['paperType'],
+                      status: res.data['quePaper']['status'],
                   };
-                  console.log(res.data);
-                  // if (res.data['questionnaire']['status'] === 'closed') {
-                  //     // this.$message.error({message: "error！问卷已关闭！", duration: 0});
-                  //     console.log("error！问卷已关闭！");
-                  //     this.cannotSubmit = true;
-                  // }
+                  this.isQuePaperAnswered = res.data['isQuePaperAnswered'];
+
+                  console.log(res.data['isQuePaperAnswered']);
+                  if (res.data['quePaper']['status'] === 0 || res.data['quePaper']['status'] === 2) {
+                      console.log("error！问卷已关闭！");
+                      // this.errorPrompt(`问卷已关闭！`);
+                      // setTimeout(() => {
+                      //   // 隐藏提示框（如果提示框组件支持自动隐藏）
+                      //   this.isShowPrompt = false;
+
+                      //   // 执行页面跳转
+                      //   this.$router.push({ path: '/' });
+                      // }, 3000); // 3000毫秒后执行上面的代码
+                      await this.goToRedirectPage("问卷已关闭！");
+
+                      this.cannotSubmit = true;
+                  }
                   this.questionnaire = temp;
-              }).catch(error => {
-                // 请求失败，处理错误
-                console.error('请求失败:', error);
-                // 可以在这里添加错误处理逻辑，例如提示用户
-                // alert('请求失败，请稍后重试或联系管理员。');
+
+                  // this.canClickPrompt = true;
+              },
+            // ).catch(error => {
+            //     // 请求失败，处理错误
+            //     console.error('请求失败:', error);
+            //     // 可以在这里添加错误处理逻辑，例如提示用户
+            //     alert('请求失败，请稍后重试或联系管理员。');
                 
               // // () => {
               // //     // this.$message({message: "error!问卷概况读取失败！", duration: 1000})
               // //     console.log("error!问卷概况读取失败！");
-              })
+            //   })
             
-            },
+            // },
             async submitAnswer() {
-                console.log(this.answerList)
-                if (this.checkValidate()) {
-                    axios.post("/api/fillin/submitAnswer?questionnaireId=" + this.$route.params.id, {
-                        answerList: this.answerList,
-                        // ip: this.ip
-                    }).then(() => {
-                        this.submitVisible = false;
-                        this.alreadySubmit = true;
-                        this.cannotSubmit = true;
-                        // this.$message({message: "问卷已提交", duration: 1000});
-                    }).catch(() => {
-                        // this.$message({message: "error！提交失败！", duration: 1000})
-                    });
-                }
+                console.log(this.answerList);
+
+                axios.post(GET_SUBMIT_ANS_API,
+                {
+                  answerList: this.answerList, // 将数组转换为字符串
+                }, 
+                {
+                    params: {
+                    quePaperId: this.$route.params.id,
+                    username: this.nowUserName
+                    }
+
+                }).then(() => {
+                    this.submitVisible = false;
+                    this.alreadySubmit = true;
+                    this.cannotSubmit = true;
+                    console.log(this.answerList);
+                    // this.$message({message: "问卷已提交", duration: 1000});
+                    console.log("aaa");
+                }).catch(error => {
+                // 请求失败，处理错误
+                console.error('请求失败:', error);
+                    // this.$message({message: "error！提交失败！", duration: 1000})
+                });
+            },
+
+            async saveAnswer() {
+                console.log(this.answerList);
+
+                axios.post(GET_SUBMIT_ANS_API,
+                {
+                  answerList: this.answerList, // 将数组转换为字符串
+                }, 
+                {
+                    params: {
+                    quePaperId: this.$route.params.id,
+                    username: this.nowUserName
+                    }
+
+                }).then(() => {
+                    this.submitVisible = false;
+                    this.alreadySubmit = true;
+                    this.cannotSubmit = true;
+                    console.log(this.answerList);
+                    // this.$message({message: "问卷已提交", duration: 1000});
+                    console.log("aaa");
+                }).catch(error => {
+                // 请求失败，处理错误
+                console.error('请求失败:', error);
+                    // this.$message({message: "error！提交失败！", duration: 1000})
+                });
             },
             resetAnswer() {
                 this.fetchData();
                 this.resetVisible = false;
             },
-            ifShowByCheckingFront(index) {
-                const thisQuestion = this.questionList[index];
-                if (thisQuestion.frontChoose === false)
-                    return true;
-
-                for (const oneFront of thisQuestion.frontOptions) {
-                    const frontIndex = oneFront[0] - 1;
-                    const frontValue = oneFront[1];
-                    const frontQuestion = this.questionList[frontIndex];
-                    let checkList = null;
-                    if (frontQuestion.questionType === 'single_check') {
-                        checkList = this.answerList[frontIndex].answerSingleCheck;
-                        if (frontValue != checkList) return false;
-                    } else if (frontQuestion.questionType === 'multi_check') {
-                        checkList = this.answerList[frontIndex].answerMultiCheck;
-                        for (const oneOfMulti of frontValue) {
-                            if (checkList.indexOf(oneOfMulti) === -1)
-                                return false;
-                        }
-                    }
-                }
-                return true;
-            },
             checkValidate() {
                 for (const oneAnswer of this.answerList) {
-                    if (oneAnswer.isMandatory === true) {
+                    if (oneAnswer.isMandatory === false) {
                         console.log('nullable', oneAnswer);
                         continue;
                     } else {
-                        console.log(oneAnswer.questionType === 'single_check')
-                        if (oneAnswer.questionType === 'single_check' && oneAnswer.answerSingleCheck === '' ||
-                            oneAnswer.questionType === 'multi_check' && oneAnswer.answerMultiCheck === '' ||
-                            oneAnswer.questionType === 'single_line_text' && oneAnswer.answerText === '' ||
-                            oneAnswer.questionType === 'multi_line_text' && oneAnswer.answerText === '' ||
-                            oneAnswer.questionType === 'number' && oneAnswer.answerNumber == null ||
-                            oneAnswer.questionType === 'grade' && oneAnswer.answerGrade === 0 ||
-                            oneAnswer.questionType === 'date' && oneAnswer.answerGrade == null
+                        console.log(oneAnswer.answerMultiOption.length === 0);
+                        if (oneAnswer.questionType === 1 && oneAnswer.answerSingleOption === null ||
+                            oneAnswer.questionType === 2 && oneAnswer.answerMultiOption.length === 0 ||
+                            oneAnswer.questionType === 3 && oneAnswer.answerText === '' ||
+                            oneAnswer.questionType === 4 && oneAnswer.answerCode === 0
                         ) {
                             console.log('error')
-                            this.$message.error(oneAnswer.questionId % 1000 + 1 + ' ' + oneAnswer.questionTitle + ' 是必填字段！');
+
+                            // this.errorPrompt(`每份问卷至少一个问题！`);
+                            // console.log("90");
+                            // return;
                             return false;
                         }
                     }
                 }
+                console.log("xixixi");
                 return true;
             },
             changeHandler(id,value) {
@@ -367,35 +490,201 @@ import axios from 'axios';
                 yield this.showPrompt(`确认未保存回到主页吗？`);
                 yield this.$router.push({path: '/'});
             },
-            *saveBtn() {
-                yield this.showPrompt(`确认要保存问卷？`);
+            *submitBtn() {
+                yield this.showPrompt(`确认要提交问卷？`);
+                console.log("hhh1");
+                if( this.checkValidate() === false){
+                  this.errorPrompt(`注意！！存在未填写的必填题！！`);
+                  return ;
+                }
+
+                let unwatchConfirm;
+                let unwatchCancel;
+
+
+                unwatchConfirm = this.$watch('isConfirm', (newValue) => {
+                  if (newValue) {
+                    this.submitAnswer();
+                    this.isConfirm = false; // 重置标志
+                    unwatchConfirm();
+                  }
+                });
+                unwatchCancel = this.$watch('isCancel', (newValue) => {
+                  if (newValue) {
+                    this.isCancel = false; // 重置标志
+                    unwatchCancel();
+                  }
+                });
+                console.log("hhh2");
+                // this.isCancel = false;
+                // this.isConfirm = false;
                 // yield this.saveData();
-                yield this.$router.push({path: '/'});
+                yield this.$router.push({path: '/about'});
             },
 
-            *releaseBtn() {
-                yield this.showPrompt(`确认要保存并发布问卷？`);
+            *saveBtn() {
+                yield this.showPrompt(`确认要暂存问卷？`);
+
+                this.isCancel = false;
+                this.isConfirm = false;
+
+                let unwatchConfirm;
+                let unwatchCancel;
+
+
+                unwatchConfirm = this.$watch('isConfirm', (newValue) => {
+                  if (newValue) {
+                    this.saveAnswer();
+                    this.isConfirm = false; // 重置标志
+                    unwatchConfirm();
+                  }
+                });
+                unwatchCancel = this.$watch('isCancel', (newValue) => {
+                  if (newValue) {
+                    this.isCancel = false; // 重置标志
+                    unwatchCancel();
+                  }
+                });
+
                 // yield (() => {
                 //     this.quData.state = 1;
                 //     this.quData.stateName = '发布中';
                 //     this.saveData();
                 // })();
-                yield this.$router.push({path: '/'});
+                yield this.$router.push({path: '/about'});
             },
 
-            rate(item, starValue) {
-              // 更新当前题目的评分
-              item.rating = starValue;
+            *resetBtn() {
+                this.errorPrompt(`确认要重置问卷？`);
+                console.log("reset begin");
+
+                let unwatchConfirm;
+                let unwatchCancel;
+
+
+                unwatchConfirm = this.$watch('isConfirm', (newValue) => {
+                  if (newValue) {
+                    this.resetAnswer();
+                    this.isConfirm = false; // 重置标志
+                    unwatchConfirm();
+                  }
+                });
+                unwatchCancel = this.$watch('isCancel', (newValue) => {
+                  if (newValue) {
+                    this.isCancel = false; // 重置标志
+                    unwatchCancel();
+                  }
+                });
+
+                // if( this.isConfirm === true ){
+                //   this.resetAnswer();
+                // }
+                // else if( this.isCancel === true ){
+                //   return ;
+                // }
+                console.log("reset end");
             },
+
+            rate(item, star) {
+              // 假设 item 有一个唯一的标识符 questionId
+              const questionIndex = this.questions.findIndex(q => q.questionId === item.questionId);
+              if (questionIndex !== -1) {
+                // 更新当前问题的 rating
+                item.rating = star;
+                // 更新 answerList 中的 answerCode
+                this.answerList[questionIndex].answerCode = star;
+              }
+            },
+
+            handleChange(event) {
+              // 处理事件
+            },
+
+            truncate(value, length = 10, clamp = '...') {
+              length = length || 10;
+              if (value.length > length) {
+                return value.slice(0, length) + clamp;
+              } else {
+                return value;
+              }
+            },
+
             toggleDescription() {
               this.showFullDescription = !this.showFullDescription;
             },
+
+            async goToRedirectPage(text) {
+              const re = await this.$router.push({ 
+                path: '/errorPrompt',
+                query: { message: text }
+              });
+            }
         },
-        mounted() {
+
+
+        async mounted() {
+          if(localStorage.getItem("username")){
+            this.nowUserName=localStorage.getItem("username");
+          }
           console.log("hhh");
-          this.fetchData();
-          // ... 其他逻辑
-        }
+
+          if( this.nowUserName === null ){
+            console.log("error！用户未登录！");
+            this.errorPrompt(`用户未登录！`);
+            setTimeout(() => {
+              // 隐藏提示框（如果提示框组件支持自动隐藏）
+              this.isShowPrompt = false;
+
+              // 执行页面跳转
+              this.$router.push({ path: '/login' });
+            }, 3000); // 3000毫秒后执行上面的代码
+            await this.goToRedirectPage("error！用户未登录！");
+          }
+          else{
+            await this.getQuePaper();
+
+            if(this.isQuePaperAnswered === false){
+              console.log("1122");
+              this.fetchData();
+            }else{
+              console.log("2233");
+              await this.fetchData();
+              await this.fetchSavedData();
+            }
+
+            setTimeout(() => {
+              // 设置 isLoading 为 false，这将触发页面渲染
+              this.isLoading = false;
+              this.canClickPrompt = true;
+            }, 200);
+          }
+        },
+
+        computed: {
+          descriptionLines() {
+            const words = this.questionnaire.questionnaireDescription.split('');
+            const lineLength = 50; // 每行的字符数限制
+            let lines = [''];
+            
+            words.forEach((char, index) => {
+              // 如果当前行加上新字符不会超出长度限制，则添加到当前行
+              if (lines[lines.length - 1].length < lineLength) {
+                lines[lines.length - 1] += char;
+              } else {
+                // 否则，开始新的一行
+                lines.push(char);
+              }
+            });
+            
+            return lines.filter(line => line.length > 0); // 移除空行
+          },
+
+          aaa: function () {
+                return {
+                    answerList: this.answerList,
+                }
+            },
+        },
 
         
     }
@@ -440,6 +729,27 @@ body, html {
   padding: 20px;
 }
 
+.description-line {
+  display: block; /* 每个.description-line元素显示为块级元素，自动换行 */
+}
+
+.my-toggle-button {
+  margin-top: 13px;
+  background: none; /* 确保背景色为透明 */
+  color: #409eff; /* 文字颜色为主色调 */
+  border-color: transparent; /* 透明边框，如果需要可以设置颜色 */
+  padding: 5px 12px; /* 根据需要调整内边距 */
+  border-radius: 5px; /* 轻微的圆角 */
+  border: 1px solid #409eff; /* 轻微的边框，颜色与文字颜色一致 */
+  font-size: 11px; /* 字体大小 */
+  transition: all 0.3s; /* 平滑过渡效果 */
+}
+
+.my-toggle-button:hover {
+  background-color: #5dacfa; /* 鼠标悬浮或聚焦时的背景色 */
+  color: white; /* 文字颜色变为白色 */
+  border-color: #409eff; /* 边框颜色与背景色一致 */
+}
 
 /* 提示框样式 */
 .overlay {
@@ -452,6 +762,7 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .prompt-box {
@@ -565,27 +876,78 @@ body, html {
 //     padding:20px;
 // }
 
-.options-list {
+// .options-list {
+//   display: flex;
+//   flex-direction: column; /* 垂直排列 */
+//   align-items: flex-start; /* 选项沿容器左侧排列 */
+// }
+
+.fixed-size-input {
+  width: 100%; /* 固定宽度 */
+  height: 100%; /* 固定高度 */
+  // padding: 5px; /* 内边距，可根据需要调整 */
+  // border: 1px solid #ccc; /* 边框样式 */
+  // box-sizing: border-box; /* 边框计算在宽度和高度内 */
+  resize: none; 
+  margin-top: 20px;
+  padding: 18px;
+  font-size: 1.1em;
+}
+
+.q-opt1-group {
   display: flex;
-  flex-direction: column; /* 垂直排列 */
-  align-items: flex-start; /* 选项沿容器左侧排列 */
+  flex-direction: column;
+  align-items: start; /* 根据需要调整对齐方式 */
 }
 
 .q-opt1 {
-  margin-bottom: 20px; /* 选项间的垂直距离 */
-  // font-size: 2.0em;
-  padding: 20px;
+  margin-left: 20px;
+  margin-top: 30px;
+}
+.q-opt1:first-child {
+  margin-top: 30px;
 }
 
-.q-opt1 .el-radio__label {
-  padding-left: 5px !important;
+/* 移除最后一个元素的 padding-bottom */
+.q-opt1:last-child {
+  padding-bottom: 0;
+}
+
+.q-opt1 ::v-deep .el-radio__label {
+  padding-left: 10px;
+}
+
+.q-opt2-group {
+  display: flex;
+  flex-direction: column;
+  align-items: start; /* 根据需要调整对齐方式 */
 }
 
 .q-opt2 {
-  margin-bottom: 20px; /* 选项间的垂直距离 */
-  // font-size: 2.0em;
-  padding: 20px;
+  margin-left: 20px;
+  margin-top: 30px;
 }
+
+.q-opt2:first-child {
+  margin-top: 30px;
+}
+
+/* 移除最后一个元素的 padding-bottom */
+.q-opt2:last-child {
+  padding-bottom: 0;
+}
+
+.q-opt2 ::v-deep .el-checkbox__label {
+  padding-left: 10px;
+}
+
+
+// .checkbox-wrapper:hover .q-opt2 {
+//   /* 自定义悬停时的样式 */
+//   color: #409eff; /* 文字颜色 */
+//   border-color: #c6e2ff; /* 边框颜色 */
+//   background-color: #ecf5ff; /* 背景颜色 */
+// }
 
 // /* 单选题选项样式 */
 // .q-opt1 {
@@ -686,10 +1048,22 @@ footer span:hover {
   background-color: #5b9fba;
   color: #fff;
   margin-left: 30px;
+  margin-right: 30px;
 }
 
 .ctrl-part .ctrl2:hover{
-  background-color: #abc6da;
+  background-color: #8ec0d4;
+  color: #fff;
+}
+
+.ctrl-part .ctrl3{
+  background-color: #f8d466;
+  color: #fff;
+  margin-left: 30px;
+}
+
+.ctrl-part .ctrl3:hover{
+  background-color: #f4e2ac;
   color: #fff;
 }
 

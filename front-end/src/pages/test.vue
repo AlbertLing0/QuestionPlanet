@@ -1,12 +1,13 @@
 <template>
   <body>
   <div class="container">
-    <div class="card" v-for="(card, index) in cards" :key="index">
-      <div class="content">
-        <h2>{{ card.number }}</h2>
-        <h3>{{ card.title }}</h3>
-        <p>{{ card.description }}</p>
-        <a href="#">Read More</a>
+    <div v-for="(card, index) in cards" :key="card.id" class="card" v-show="currentIndex === index">
+      <div class="img-box">
+        <img :src="card.image" alt="">
+      </div>
+      <div class="text-box">
+        <h2>{{ card.title }}</h2>
+        <p>{{ card.content }}</p>
       </div>
     </div>
   </div>
@@ -14,123 +15,94 @@
 </template>
 
 <script>
-
-import VanillaTilt from 'vanilla-tilt';
-
 export default {
-  name: 'GlassCard',
   data() {
     return {
+      currentIndex: 0,
       cards: [
-        { number: '01', title: 'Card One', description: 'Realistic glass card hover effect, realistic glass card hover effect, realistic glass card hover effect.' },
-        { number: '02', title: 'Card Two', description: 'Realistic glass card hover effect, realistic glass card hover effect, realistic glass card hover effect.' },
-        { number: '03', title: 'Card Three', description: 'Realistic glass card hover effect, realistic glass card hover effect, realistic glass card hover effect, realistic glass card hover effect.' }
+        { id: 1, image: 'static/test/1.jpg', title: '卡片一', content: '我是内容一' },
+        { id: 2, image: 'static/test/2.jpg', title: '卡片二', content: '我是内容二' },
+        { id: 3, image: 'static/test/3.jpg', title: '卡片三', content: '我是内容三' }
       ]
     };
   },
   mounted() {
-    VanillaTilt.init(document.querySelectorAll(".card"), {
-      max: 15,  // Maximum tilt degree
-      speed: 400,  // Speed of the transition
-      glare: true,  // Enable glare effect
-      "max-glare": 1  // Maximum opacity of the glare
-    });
+    this.startRotation();
+  },
+  methods: {
+    startRotation() {
+      setInterval(() => {
+        this.currentIndex = (this.currentIndex + 1) % this.cards.length;
+      }, 3000); // Rotate every 3000 milliseconds (3 seconds)
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-/* 引入网络字体：Poppins */
-//@import url("http://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap");
-
-*{
-  /* 初始化 */
+* {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  /* 设置字体 */
-  //font-family: "Poppins";
 }
-body{
-  /* 100%窗口高度 */
-  //min-height: 100vh;
-  /* 弹性布局 水平+垂直居中 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  //background-color: #161626;
-}
-/* 给背景增加两个渐变圆 */
 
-.container{
-  position: relative;
+body {
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: linear-gradient(200deg, #80d0c7, #13547a);
+}
+
+.container {
+  display: flex;
   flex-wrap: wrap;
-  z-index: 1;
-}
-.container .card{
-  /* 相对定位 */
-  position: relative;
-  width: 250px;
-  height: 350px;
-  background-color: rgba(255,255,255,0.1);
-  margin: 10px;
-  border-radius: 15px;
-  /* 阴影 */
-  box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
-  /* 溢出隐藏 */
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-top: 1px solid rgba(255,255,255,0.5);
-  border-left: 1px solid rgba(255,255,255,0.5);
-  /* 背景模糊 */
-  backdrop-filter: blur(5px);
-}
-.container .card .content{
-  padding: 20px;
-  text-align: center;
-  /* 默认下移+隐藏 */
-  transform: translateY(100px);
-  opacity: 0;
-  transition: 0.5s;
-}
-.container .card:hover .content{
-  /* 鼠标移入，上移+显示 */
-  transform: translateY(0);
-  opacity: 1;
-}
-.container .card .content h2{
-  position: absolute;
-  top: -80px;
-  right: 25px;
-  font-size: 128px;
-  color: rgba(255,255,255,0.05);
-}
-.container .card .content h3{
-  font-size: 28px;
-  color: #fff;
-}
-.container .card .content p{
-  font-size: 16px;
-  color: #fff;
-  font-weight: 300;
-  margin: 10px 0 15px 0;
-}
-.container .card .content a{
-  position: relative;
-  display: inline-block;
-  padding: 8px 20px;
-  margin-top: 15px;
-  background-color: #fff;
-  color: #000;
-  text-decoration: none;
-  border-radius: 20px;
-  font-weight: 500;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  padding: 30px;
 }
 
+.card {
+  max-width: 300px;
+  height: 215px;
+  background-color: #fff;
+  margin: 30px 15px;
+  padding: 20px 15px;
+  border-radius: 5px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: height 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+  height: 420px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.img-box {
+  position: relative;
+  width: 50%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 5px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.img-box img {
+  width: 100%;
+}
+
+.text-box {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s ease-in-out;
+  padding: 10px 15px;
+  text-align: center;
+  color: #111;
+}
+
+.card:hover .text-box {
+  visibility: visible;
+  opacity: 1;
+  margin-top: -40px;
+}
 </style>

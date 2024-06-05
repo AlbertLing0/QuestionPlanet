@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import PlanetBG from "~/components/planetBG.vue";
 import NavBar from "~/components/navigation-bar.vue";
 import axios from 'axios';
+import {EMAIL_API, REGISTER_API} from "~/utils/request.js";
 
 export default defineComponent({
   components: {NavBar,axios},
@@ -25,7 +26,7 @@ export default defineComponent({
       const params = new URLSearchParams();
       params.append('email', this.Email);
       try {
-        const response = await axios.post('http://localhost:1234/api/sendemail', params);
+        const response = await axios.post(EMAIL_API, params);
 
         // 处理成功响应，例如：
         if (response.data === 0) {
@@ -47,7 +48,7 @@ export default defineComponent({
       params.append('password', this.Password);
       params.append('code', this.EmailVerificationCode);
       try {
-        const response = await axios.post('http://localhost:1234/api/register', params);
+        const response = await axios.post(REGISTER_API, params);
 
         // 处理成功响应，例如：
         if (response.data === 'success') {
