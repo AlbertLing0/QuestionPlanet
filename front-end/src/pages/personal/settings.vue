@@ -9,7 +9,7 @@
         <sideBar @toggle-theme="toggleTheme"/>
       </div>
       <div class="right-box">
-        <avatar-uploader/>
+        <settings_square/>
       </div>
 
     </div>
@@ -22,12 +22,12 @@ import sideBar from "~/components/side-bar.vue";
 import topBar from "~/components/top-bar.vue"
 import GlassCard from "~/components/glassCard.vue";
 import quest_square from "~/components/quest_square.vue";
-import avatarUploader from "~/components/avatar-uploader1.vue"
+import settings_square from "~/components/settings_square.vue";
 import {inject} from "vue";
 
 export default {
   name: "settings",
-  components: {GlassCard, sideBar, topBar, quest_square,avatarUploader},
+  components: {GlassCard, sideBar, topBar, quest_square,settings_square},
   setup() {
     const nowUserName = inject('Username');
     return {
