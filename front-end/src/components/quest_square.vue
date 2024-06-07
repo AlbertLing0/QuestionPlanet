@@ -133,7 +133,8 @@ export default {
 }
 .survey-list-container {
   height: 50vh;
-  width: 80vw;
+  width: auto;
+  //overflow: hidden;
   //border: 1px solid #ccc; /* 添加边框 */
   //align-items: center;
   //background: black;
