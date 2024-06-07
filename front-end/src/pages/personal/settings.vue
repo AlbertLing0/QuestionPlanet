@@ -106,7 +106,6 @@ export default {
   display: flex;
   flex-direction: row;
   position: relative;
-
   #side-bar {
     position: relative;
     flex: 0;
@@ -126,7 +125,7 @@ export default {
     height: 80vh;
     background-color: var(--theme-text-box-color);
     border-radius: 20px;
-    padding: 3% 5%;
+    padding: 2% 2%;
     display: flex;
     flex-direction: column;
 

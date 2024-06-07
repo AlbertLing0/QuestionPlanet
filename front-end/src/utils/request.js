@@ -22,4 +22,5 @@ export const GET_SAVED_ANS_API = `${BASE_URL}/api/fillin/getAnswerList`;
 export const GET_ALL_QUES_PAPERS=`${BASE_URL}/getAllQuePapers`;
 export const POST_UPLOAD_AVATAR = `${BASE_URL}/uploadAvatar`;
 export const GET_AVATAR = `${BASE_URL}/getAvatar`;
-
+export const GET_USER_INFO = `${BASE_URL}/getUserInfo`;
+export const SAVE_USER_INFO = `${BASE_URL}/saveUserInfo`;
