@@ -256,7 +256,7 @@ export default {
   background: var(--pane-color);
   padding: 20px;
   height: 68vh;
-
+  overflow-y: scroll;
 }
 
 .box-head{
@@ -270,7 +270,7 @@ el-scrollbar{
 }
 
 .settings-list {
-  //height: 50vh;
+  height: 56vh;
   //width: 80vw;
   display: flex;
   flex-direction: row;
@@ -307,7 +307,7 @@ el-scrollbar{
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 5vh;
+  min-height: 8%;
   color: #000;
   cursor: pointer;
   min-width: 80%;
@@ -319,14 +319,14 @@ el-scrollbar{
 
 .settings-item.active{
     min-width: 83%;
-    min-height: 5.5vh;
+    min-height: 9%;
 }
 
 .submit-button {
   margin-left:31.5%;
   border-radius: 10px;
   border: 2px solid var(--el-text-color-placeholder);
-  height: 80%;
+  height: 1.5em;
   width: 18em;
   font-size: 16;
   font-weight:bold;
@@ -335,7 +335,7 @@ el-scrollbar{
 }
 
 .password-reset {
-  min-height: 14vh;
+  min-height: 26%;
   min-width: 80%;
   border: 2px solid var(--theme-text-box-color);
   border-radius: 20px;
@@ -348,6 +348,11 @@ el-scrollbar{
   align-items: flex-start;
 }
 
+.password-reset.active {
+  min-width: 83%;
+  min-height: 28%;
+}
+
 .input-box-left-part {
   width: 50%;
   height: auto;
@@ -356,11 +361,6 @@ el-scrollbar{
 
 .input-box-right-part {
   margin-left: 3.5%;
-}
-
-.password-reset.active {
-  min-width: 83%;
-  min-height: 15vh;
 }
 
 .input-box-container {
