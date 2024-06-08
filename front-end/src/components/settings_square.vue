@@ -40,6 +40,39 @@
           >
             <div class= "submit-button" @click = "submit">提交</div>
           </div>
+          <div
+            class= "password-reset"
+            :class="{ active: isResetActive === true}"
+            @mouseover="resetReverse(true)"
+            @mouseleave="resetReverse(false)"
+          >
+            <div class= "input-box-left-part">
+              <div class= "input-box-container">
+                <input type="text" class= "input-box" placeholder="输入验证码" v-model="inputCaptcha">
+              </div>
+              <div class= "input-box-container">
+                <input type="text" class= "input-box" placeholder="输入密码" v-model="inputPassword">
+              </div>
+              <div class= "input-box-container">
+                <input type="text" class= "input-box" placeholder="重复密码" v-model="inputRepeatPassword">
+              </div>
+            </div>
+            <div class="input-box-right-part">
+              <div class="reset-info">
+                修改密码
+              </div>
+              <div class="captcha-button"
+                @click="sendVerificationCode()"
+              >
+                发送验证码
+              </div>
+              <div class="reset-button"
+                @click="resetPassword()"
+              >
+                修改密码
+              </div>
+            </div>
+          </div>
         </div>
       </el-scrollbar>
     </el-main>
@@ -51,7 +84,7 @@ import { onMounted, ref, inject } from 'vue';
 import avatarUploader from "~/components/avatar-uploader1.vue";
 import displaybar from "~/components/display-bar.vue";
 import axios from 'axios';
-import { GET_USER_INFO, SAVE_USER_INFO } from "~/utils/request.js";
+import { GET_USER_INFO, SAVE_USER_INFO, EMAIL_API, RESET_PASSWORD_API } from "~/utils/request.js";
 
 export default {
   name: "settings_square",
@@ -60,7 +93,11 @@ export default {
     displaybar
   },
   setup() {
+    const inputCaptcha = ref('');
+    const inputPassword = ref('');
+    const inputRepeatPassword = ref('');
     const isChanged = ref(false);
+    const isResetActive = ref(false);
     const settings = ref([
       { setting: "avatarUploader", displaymessage: "", inputtype: "", isdisabled: "", displayinfo: ""},
       { setting: "display-bar", displaymessage: "写一条善意的信息吧~", inputtype: "text", isdisabled: false, displayinfo: "昵    称"},
@@ -80,6 +117,11 @@ export default {
     const setActive = (index) => {
       activeIndex.value = index;
     };
+
+    const resetReverse = (value) => {
+      isResetActive.value = value;
+    };
+
     const handleInputChange = (value) => {
       switch (value.displayinfo) {
         case "昵    称":
@@ -133,6 +175,54 @@ export default {
       }
     };
 
+    const sendVerificationCode = async () => {
+      const params = new URLSearchParams();
+      params.append('email', settings.value[4].displaymessage);
+      try {
+        const response = await axios.post(EMAIL_API, params);
+
+        if (response.data === 0) {
+          console.log('验证码发送成功');
+          alert('验证码发送成功');
+        } else {
+          console.error('验证码发送失败', response);
+        }
+      } catch (error) {
+        console.error('发送验证码时出现错误', error);
+      };
+    }
+
+    const resetPassword = async () => {
+      if (inputPassword.value === inputRepeatPassword.value){
+        password.value = inputPassword.value
+        try {
+          const params = new URLSearchParams();
+          params.append('code', inputCaptcha.value);
+          params.append('email', settings.value[4].displaymessage);
+          params.append('password', password.value);
+          const response = await axios.post(RESET_PASSWORD_API, params);
+          if (response.data === "success"){
+            console.log("修改成功");
+            alert("修改成功");
+          }
+          if(response.data === "errorEmailCode"){
+            console.log("验证码错误");
+            alert("验证码错误");
+          }
+          if(response.data === "invalidPassword"){
+            console.log("不允许的密码");
+            alert("不允许的密码");
+          }
+        } catch (error) {
+          console.error('Reset Password Failed:', error);
+          alert("错误，请重试");
+        }
+      }
+      else{
+        alert("两次输入密码须一致");
+      }
+    };
+
     onMounted(() => {
       getUserInfo();
     });
@@ -144,7 +234,14 @@ export default {
       setActive,
       isChanged,
       handleInputChange,
-      submit
+      submit,
+      isResetActive,
+      resetReverse,
+      inputCaptcha,
+      inputPassword,
+      inputRepeatPassword,
+      sendVerificationCode,
+      resetPassword
     };
   }
 };
@@ -211,7 +308,6 @@ el-scrollbar{
   background-position: center;
   background-repeat: no-repeat;
   min-height: 5vh;
-  height: auto;
   color: #000;
   cursor: pointer;
   min-width: 80%;
@@ -226,9 +322,6 @@ el-scrollbar{
     min-height: 5.5vh;
 }
 
-.settings-button {
-}
-
 .submit-button {
   margin-left:31.5%;
   border-radius: 10px;
@@ -239,5 +332,79 @@ el-scrollbar{
   font-weight:bold;
   text-align: center;
   color: #8c939d;
+}
+
+.password-reset {
+  min-height: 14vh;
+  min-width: 80%;
+  border: 2px solid var(--theme-text-box-color);
+  border-radius: 20px;
+  margin: 10px;
+  background-color: var(--theme-text-box-color);
+  cursor: pointer;
+  transition: all 100ms ease-in;
+  animation: slideInFromRight 0.1s ease-out forwards;
+  display: flex;
+  align-items: flex-start;
+}
+
+.input-box-left-part {
+  width: 50%;
+  height: auto;
+  margin-left: 31.5%;
+}
+
+.input-box-right-part {
+  margin-left: 3.5%;
+}
+
+.password-reset.active {
+  min-width: 83%;
+  min-height: 15vh;
+}
+
+.input-box-container {
+  height: 1.5em;
+  border: 2px solid var(--el-text-color-placeholder);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 18em;
+  margin-top: 2.5%;
+  max-height: 5%;
+}
+
+.input-box {
+  display: inline-block;
+  border: 0ch;
+  background-color: transparent;
+  flex-grow: 1;
+  margin-inline: 3em;
+}
+
+.input-box:focus{
+  outline:none;
+}
+
+.reset-info {
+  color: black;
+  width: 4em;
+  margin-top: 20%;
+}
+
+.captcha-button  {
+  font-size: 16x;
+  color: #8c939d;
+  width: 5em;
+  margin-top: 20%;
+}
+
+.reset-button  {
+  margin-top: 20%;
+  font-size: 16x;
+  color: #8c939d;
+  width: 4em;
 }
 </style>
