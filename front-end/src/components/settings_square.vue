@@ -58,9 +58,6 @@
               </div>
             </div>
             <div class="input-box-right-part">
-              <div class="reset-info">
-                修改密码
-              </div>
               <div class="captcha-button"
                 @click="sendVerificationCode()"
               >
@@ -296,17 +293,15 @@ el-scrollbar{
 .settings-item {
   display: flex;
   justify-content: space-between; /* 两端对齐 */
-  align-items: center;
   //padding: 10px;
   //border: 1px solid var(--border-color);
   //margin: 5px;
-  background-color: var(--theme-text-box-color);
+  background-color: transparent;
   border-radius: 20px;
   align-items: center;
   position: relative;
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
   min-height: 8%;
   color: #000;
   cursor: pointer;
@@ -315,11 +310,11 @@ el-scrollbar{
   position: relative;
   transition: all 150ms ease-in;
   animation: slideInFromRight 0.1s ease-out forwards;
+
 }
 
 .settings-item.active{
-    min-width: 83%;
-    min-height: 9%;
+    min-width: 80%;
 }
 
 .submit-button {
@@ -337,10 +332,10 @@ el-scrollbar{
 .password-reset {
   min-height: 26%;
   min-width: 80%;
-  border: 2px solid var(--theme-text-box-color);
+  //border: 2px solid var(--theme-text-box-color);
   border-radius: 20px;
   margin: 10px;
-  background-color: var(--theme-text-box-color);
+  background-color: transparent;
   cursor: pointer;
   transition: all 100ms ease-in;
   animation: slideInFromRight 0.1s ease-out forwards;
@@ -349,8 +344,8 @@ el-scrollbar{
 }
 
 .password-reset.active {
-  min-width: 83%;
-  min-height: 28%;
+  min-width: 80%;
+  min-height: 26%;
 }
 
 .input-box-left-part {
@@ -388,12 +383,6 @@ el-scrollbar{
   outline:none;
 }
 
-.reset-info {
-  color: black;
-  width: 4em;
-  margin-top: 20%;
-}
-
 .captcha-button  {
   font-size: 16x;
   color: #8c939d;
@@ -402,7 +391,7 @@ el-scrollbar{
 }
 
 .reset-button  {
-  margin-top: 20%;
+  margin-top: 70%;
   font-size: 16x;
   color: #8c939d;
   width: 4em;

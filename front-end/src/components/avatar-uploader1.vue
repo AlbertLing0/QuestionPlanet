@@ -4,9 +4,10 @@
       :http-request="uploadAvatar"
       :show-file-list="false"
       :before-upload="beforeAvatarUpload"
+      :class="{ 'upload-success': uploadSuccess }" 
   >
-    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-    <div class="avatar-uploader-icon-contianer">
+    <img v-if="imageUrl" :src="imageUrl" :style="{ width: 54 * imageWidth / imageHeight + 'px', height: '54px' }" class="avatar" />
+    <div class="avatar-uploader-icon-contianer" v-if="!imageUrl">
       <el-icon class="avatar-uploader-icon"><Plus /></el-icon>
     </div>
     
@@ -15,7 +16,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import axios from 'axios'
@@ -31,7 +32,10 @@ export default {
     displayinfo: String
   },
   setup() {
-    const imageUrl = ref('')
+    const uploadSuccess = ref(false);
+    const imageUrl = ref('');
+    const imageWidth = ref(0);
+    const imageHeight = ref(0);
     const username = localStorage.getItem("username") || "default_username"
     const uploadData = ref({ username })
 
@@ -47,8 +51,16 @@ export default {
             'Content-Type': 'multipart/form-data'
           }
         })
-        onSuccess(response.data)
-        imageUrl.value = URL.createObjectURL(file)
+        onSuccess(response.data);
+        imageUrl.value = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          imageWidth.value = img.width;
+          imageHeight.value = img.height;
+          uploadSuccess.value = true;
+        };
+        img.src = imageUrl.value;
+
       } catch (error) {
         onError(error)
         ElMessage.error('Upload failed!')
@@ -74,9 +86,12 @@ export default {
 
     return {
       imageUrl,
+      imageWidth,
+      imageHeight,
       uploadData,
       uploadAvatar,
       beforeAvatarUpload,
+      uploadSuccess
     }
   }
 }
@@ -84,10 +99,10 @@ export default {
 
 <style scoped>
 .avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
+  
   display: block;
-  padding: 2% 2%;
+  object-fit: contain; /* 图片自适应容器大小 */
+  padding-top: 5px;
 }
 
 .remind-text {
@@ -101,26 +116,22 @@ export default {
 
 .avatar-uploader {
   border: 2px solid var(--theme-text-color);
-  border-radius: 20px;
+  border-radius: 2px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   transition: var(--el-transition-duration-fast);
-  margin-left:44%;
+  margin-left:41%;
+  height: 50px;
+  width: 50px;
+  display: flex;
 }
 
-.avatar-uploader el-upload {
-  border: 2px solid var(--theme-info-text-color);
-  border-radius: 20px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-  margin-left:44%;
-}
-
-.avatar-uploader el-upload:hover {
-  border-color: var(--el-color-primary);
+.avatar-uploader.upload-success {
+  display: inline-block;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
 }
 
 .avatar-uploader-icon-contianer {
@@ -129,7 +140,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  
+  margin-left: 90%;
 }
 
 .avatar-uploader-icon {
